@@ -1,23 +1,27 @@
 {
-  "name": "typedoc-custom-theme-demo",
-  "version": "1.0.0",
+  "name": "typedoc-plugin-airthium",
+  "version": "0.1.0",
   "main": "dist/index.js",
-  "repository": "git@github.com:Gerrit0/typedoc-custom-theme-demo.git",
-  "author": "Gerrit Birkeland <gerrit@gerritbirkeland.com>",
-  "license": "MIT",
+  "repository": "git@github.com:Airthium/typedoc-plugin-airthium",
+  "author": {
+    "name": "Airthium",
+    "url": "https://github.com/orgs/Airthium/people"
+  },
+  "license": "UNLICENSED",
   "keywords": [
-    "typedoc-theme"
+    "airthium",
+    "typedoc-plugin"
   ],
   "devDependencies": {
-    "typedoc": "^0.22.9",
-    "typescript": "^4.4.4"
+    "typedoc": "0.22.12",
+    "typescript": "4.5.5"
   },
   "peerDependencies": {
-    "typedoc": "^0.22.9"
+    "typedoc": "0.22.12"
   },
   "scripts": {
     "build": "tsc",
     "predocs": "tsc",
-    "docs": "typedoc src --plugin dist/index.js"
+    "docs": "typedoc --entryPoints src --entryPointStrategy expand --plugin ./dist/index.js  --theme airthium"
   }
 }
