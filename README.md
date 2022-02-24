@@ -2,6 +2,4 @@
 
 ## TOTO list
 
-collabsible nav
-
-nav margin
+stay open on reload (sessionStorage)
