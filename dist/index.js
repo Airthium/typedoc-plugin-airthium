@@ -155,7 +155,6 @@ class NavigationOverrideThemeContext extends typedoc_1.DefaultThemeRenderContext
             const modules = props.model.project.getChildrenByKind(typedoc_1.ReflectionKind.SomeModule);
             modules.forEach((module) => {
                 const name = module.name;
-                console.log(name);
                 const href = this.urlTo(module);
                 const path = name.split(".");
                 let init = nav;

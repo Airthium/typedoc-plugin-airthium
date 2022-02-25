@@ -191,7 +191,6 @@ export class NavigationOverrideThemeContext extends DefaultThemeRenderContext {
 
       modules.forEach((module) => {
         const name = module.name;
-        console.log(name);
         const href = this.urlTo(module);
 
         const path = name.split(".");
