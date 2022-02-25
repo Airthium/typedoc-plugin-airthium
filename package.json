@@ -22,6 +22,6 @@
   "scripts": {
     "build": "tsc",
     "predocs": "tsc",
-    "docs": "typedoc --entryPoints src --entryPointStrategy expand --plugin ./dist/index.js  --theme airthium"
+    "docs": "typedoc --tsconfig tsconfig.test.json --entryPoints test --entryPointStrategy expand --plugin ./dist/index.js  --theme airthium"
   }
 }

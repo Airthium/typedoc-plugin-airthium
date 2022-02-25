@@ -17,6 +17,10 @@ const style = `.nav {
   line-height: 28px;
 }
 
+.nav .tsd-kind-icon:before {
+  margin: 0 3px 5px 0 !important;
+}
+
 .with-collapsible {
   display: flex;
   align-items: center;
@@ -151,14 +155,15 @@ class NavigationOverrideThemeContext extends typedoc_1.DefaultThemeRenderContext
             const modules = props.model.project.getChildrenByKind(typedoc_1.ReflectionKind.SomeModule);
             modules.forEach((module) => {
                 const name = module.name;
+                console.log(name);
                 const href = this.urlTo(module);
                 const path = name.split(".");
                 let init = nav;
                 path.forEach((p, index) => {
                     if (!init[p])
-                        init[p] = {};
+                        init[p] = { name: p };
                     if (index === path.length - 1)
-                        init[p] = { name: path.pop(), href };
+                        init[p] = { name: p, href };
                     init = init[p];
                 });
             });
