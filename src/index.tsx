@@ -68,8 +68,8 @@ const style = `#tsd-widgets {
 }
 `;
 
-const script = `const getHref = (collapsible) => {
-  return collapsible.previousSibling.href;
+const script = `const getCompleteName = (collapsible) => {
+  return collapsible.previousSibling.previousSibling.innerHTML;
 };
 
 const getContent = (collapsible) => {
@@ -94,8 +94,8 @@ const collapsibles = document.getElementsByClassName("collapsible");
 for (const collapsible of collapsibles) {
   // Active
   {
-    const url = getHref(collapsible);
-    const active = getItem(url);
+    const completeName = getCompleteName(collapsible);
+    const active = getItem(completeName);
     if (active === "true") {
       collapsible.classList.add("active");
       const content = getContent(collapsible);
@@ -106,18 +106,63 @@ for (const collapsible of collapsibles) {
   // Click event
   collapsible.addEventListener("click", function () {
     this.classList.toggle("active");
-    const url = getHref(this);
+    const completeName = getCompleteName(this);
     const content = getContent(this);
     if (content.style.display === "block") {
-      setItem(url, false);
+      setItem(completeName, false);
       content.style.display = "none";
     } else {
-      setItem(url, true);
+      setItem(completeName, true);
       content.style.display = "block";
     }
   });
 }
 `;
+
+const findPath = (ob: any, key: any, value: any) => {
+  const path: any = [];
+  const keyExists: any = (obj: any) => {
+    if (!obj || (typeof obj !== "object" && !Array.isArray(obj))) {
+      return false;
+    } else if (obj.hasOwnProperty(key) && obj[key] === value) {
+      return true;
+    } else if (Array.isArray(obj)) {
+      let parentKey = path.length ? path.pop() : "";
+
+      for (let i = 0; i < obj.length; i++) {
+        path.push(`${parentKey}[${i}]`);
+        const result = keyExists(obj[i], key);
+        if (result) {
+          return result;
+        }
+        path.pop();
+      }
+    } else {
+      for (const k in obj) {
+        path.push(k);
+        const result = keyExists(obj[k], key);
+        if (result) {
+          return result;
+        }
+        path.pop();
+      }
+    }
+
+    return false;
+  };
+
+  keyExists(ob);
+
+  return path;
+};
+
+const buildBreadCrumbs = (breads: any, name: any) => {
+  const path = findPath(breads, "completeName", name);
+
+  console.log(path);
+
+  // TODO continue breadcrumbs
+};
 
 /**
  * Build list
@@ -131,7 +176,9 @@ const buildList = (object: any): any => {
   // Keys
   const keys = Object.keys(object);
 
-  // Remove name & href
+  // Remove completeName, name & href
+  const completeNameIndex = keys.indexOf("completeName");
+  if (completeNameIndex !== -1) keys.splice(completeNameIndex, 1);
   const nameIndex = keys.indexOf("name");
   if (nameIndex !== -1) keys.splice(nameIndex, 1);
   const hrefIndex = keys.indexOf("href");
@@ -144,9 +191,10 @@ const buildList = (object: any): any => {
   return (
     <ul class="tsd-index list ">
       {Object.keys(object).map((key) => {
-        if (key === "name" || key === "href") return;
+        if (key === "completeName" || key === "name" || key === "href") return;
 
         const item = object[key];
+        const completeName = item.completeName;
         const name = item.name;
         const href = item.href;
 
@@ -157,6 +205,7 @@ const buildList = (object: any): any => {
             {subItem ? (
               <>
                 <div class="with-collapsible tsd-kind-module">
+                  <span style="display: none;">{completeName}</span>
                   <a href={href} class="tsd-kind-icon">
                     {name}
                   </a>
@@ -186,6 +235,37 @@ export class NavigationOverrideThemeContext extends DefaultThemeRenderContext {
 
     // Overridden methods must have `this` bound if they intend to use it.
     // <JSX.Raw /> may be used to inject HTML directly.
+    this.breadcrumb = (props: Reflection) => {
+      const breads: any = {};
+
+      const currentName = props.name;
+
+      const modules = props.project.getChildrenByKind(
+        ReflectionKind.SomeModule
+      );
+
+      modules.forEach((module) => {
+        const name = module.name;
+        const href = this.urlTo(module);
+
+        const path = name.split(".");
+
+        let init = breads;
+        path.forEach((p, index) => {
+          if (!init[p]) init[p] = { name: p };
+
+          if (index === path.length - 1)
+            init[p] = { completeName: name, name: p, href };
+
+          init = init[p];
+        });
+      });
+
+      return (
+        <ul class="tsd-breadcrumb">{buildBreadCrumbs(breads, currentName)}</ul>
+      );
+    };
+
     this.navigation = (props: PageEvent<Reflection>) => {
       const nav: any = {};
 
@@ -203,7 +283,8 @@ export class NavigationOverrideThemeContext extends DefaultThemeRenderContext {
         path.forEach((p, index) => {
           if (!init[p]) init[p] = { name: p };
 
-          if (index === path.length - 1) init[p] = { name: p, href };
+          if (index === path.length - 1)
+            init[p] = { completeName: name, name: p, href };
 
           init = init[p];
         });

@@ -59,8 +59,8 @@ const style = `#tsd-widgets {
   overflow: hidden;
 }
 `;
-const script = `const getHref = (collapsible) => {
-  return collapsible.previousSibling.href;
+const script = `const getCompleteName = (collapsible) => {
+  return collapsible.previousSibling.previousSibling.innerHTML;
 };
 
 const getContent = (collapsible) => {
@@ -85,8 +85,8 @@ const collapsibles = document.getElementsByClassName("collapsible");
 for (const collapsible of collapsibles) {
   // Active
   {
-    const url = getHref(collapsible);
-    const active = getItem(url);
+    const completeName = getCompleteName(collapsible);
+    const active = getItem(completeName);
     if (active === "true") {
       collapsible.classList.add("active");
       const content = getContent(collapsible);
@@ -97,18 +97,58 @@ for (const collapsible of collapsibles) {
   // Click event
   collapsible.addEventListener("click", function () {
     this.classList.toggle("active");
-    const url = getHref(this);
+    const completeName = getCompleteName(this);
     const content = getContent(this);
     if (content.style.display === "block") {
-      setItem(url, false);
+      setItem(completeName, false);
       content.style.display = "none";
     } else {
-      setItem(url, true);
+      setItem(completeName, true);
       content.style.display = "block";
     }
   });
 }
 `;
+const findPath = (ob, key, value) => {
+    const path = [];
+    const keyExists = (obj) => {
+        if (!obj || (typeof obj !== "object" && !Array.isArray(obj))) {
+            return false;
+        }
+        else if (obj.hasOwnProperty(key) && obj[key] === value) {
+            return true;
+        }
+        else if (Array.isArray(obj)) {
+            let parentKey = path.length ? path.pop() : "";
+            for (let i = 0; i < obj.length; i++) {
+                path.push(`${parentKey}[${i}]`);
+                const result = keyExists(obj[i], key);
+                if (result) {
+                    return result;
+                }
+                path.pop();
+            }
+        }
+        else {
+            for (const k in obj) {
+                path.push(k);
+                const result = keyExists(obj[k], key);
+                if (result) {
+                    return result;
+                }
+                path.pop();
+            }
+        }
+        return false;
+    };
+    keyExists(ob);
+    return path;
+};
+const buildBreadCrumbs = (breads, name) => {
+    const path = findPath(breads, "completeName", name);
+    console.log(path);
+    // TODO continue breadcrumbs
+};
 /**
  * Build list
  * @param object Object
@@ -120,7 +160,10 @@ const buildList = (object) => {
         return;
     // Keys
     const keys = Object.keys(object);
-    // Remove name & href
+    // Remove completeName, name & href
+    const completeNameIndex = keys.indexOf("completeName");
+    if (completeNameIndex !== -1)
+        keys.splice(completeNameIndex, 1);
     const nameIndex = keys.indexOf("name");
     if (nameIndex !== -1)
         keys.splice(nameIndex, 1);
@@ -132,14 +175,16 @@ const buildList = (object) => {
         return;
     // Return element
     return (typedoc_1.JSX.createElement("ul", { class: "tsd-index list " }, Object.keys(object).map((key) => {
-        if (key === "name" || key === "href")
+        if (key === "completeName" || key === "name" || key === "href")
             return;
         const item = object[key];
+        const completeName = item.completeName;
         const name = item.name;
         const href = item.href;
         const subItem = buildList(item);
         return (typedoc_1.JSX.createElement("li", { class: "tsd-kind-module" }, subItem ? (typedoc_1.JSX.createElement(typedoc_1.JSX.Fragment, null,
             typedoc_1.JSX.createElement("div", { class: "with-collapsible tsd-kind-module" },
+                typedoc_1.JSX.createElement("span", { style: "display: none;" }, completeName),
                 typedoc_1.JSX.createElement("a", { href: href, class: "tsd-kind-icon" }, name),
                 typedoc_1.JSX.createElement("button", { type: "button", class: "collapsible" })),
             typedoc_1.JSX.createElement("div", { class: "content" }, buildList(item)))) : (typedoc_1.JSX.createElement("a", { href: href, class: "tsd-kind-icon" }, name))));
@@ -154,6 +199,25 @@ class NavigationOverrideThemeContext extends typedoc_1.DefaultThemeRenderContext
         super(theme, options);
         // Overridden methods must have `this` bound if they intend to use it.
         // <JSX.Raw /> may be used to inject HTML directly.
+        this.breadcrumb = (props) => {
+            const breads = {};
+            const currentName = props.name;
+            const modules = props.project.getChildrenByKind(typedoc_1.ReflectionKind.SomeModule);
+            modules.forEach((module) => {
+                const name = module.name;
+                const href = this.urlTo(module);
+                const path = name.split(".");
+                let init = breads;
+                path.forEach((p, index) => {
+                    if (!init[p])
+                        init[p] = { name: p };
+                    if (index === path.length - 1)
+                        init[p] = { completeName: name, name: p, href };
+                    init = init[p];
+                });
+            });
+            return (typedoc_1.JSX.createElement("ul", { class: "tsd-breadcrumb" }, buildBreadCrumbs(breads, currentName)));
+        };
         this.navigation = (props) => {
             const nav = {};
             const modules = props.model.project.getChildrenByKind(typedoc_1.ReflectionKind.SomeModule);
@@ -166,7 +230,7 @@ class NavigationOverrideThemeContext extends typedoc_1.DefaultThemeRenderContext
                     if (!init[p])
                         init[p] = { name: p };
                     if (index === path.length - 1)
-                        init[p] = { name: p, href };
+                        init[p] = { completeName: name, name: p, href };
                     init = init[p];
                 });
             });
