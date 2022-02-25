@@ -22,7 +22,7 @@ const style = `.nav {
 }
 
 .nav ul li {
-  line-height: 28px;
+  line-height: 30px;
 }
 
 .nav .tsd-kind-icon:before {
