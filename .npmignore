@@ -1,0 +1,8 @@
+.github
+docs
+node_modules
+src
+test
+.gitignore
+tsconfig.json
+tsconfig.test.json
