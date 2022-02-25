@@ -3,6 +3,136 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.load = exports.AirthiumTheme = exports.NavigationOverrideThemeContext = void 0;
 const typedoc_1 = require("typedoc");
+const style = `.nav {
+  padding-left: 10px;
+}
+
+.nav ul {
+  padding-inline-start: 10px !important;
+  margin: 5px 0 10px 0;
+  list-style: disc;
+}
+
+.with-collapsible {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.collapsible {
+  background-color: #4da6ff;
+  color: #fff;
+  cursor: pointer;
+  padding: 0 0.25em;
+  margin-left: 0.5em;
+  border: none;
+  outline: none;
+  font-size: 1.5em;
+}
+
+.collapsible::after {
+  content: "\\0002B";
+}
+
+.collapsible.active::after {
+  content: "\\02212";
+}
+
+.active, .collapsible:hover {
+  background-color: #0672de;
+}
+
+.content {
+  display: none;
+  overflow: hidden;
+}
+`;
+const script = `const getName = (collapsible) => {
+  return collapsible.previousSibling.innerHTML;
+};
+
+const getContent = (collapsible) => {
+  return collapsible.parentNode.nextSibling;
+};
+
+const setItem = (name, value) => {
+  if (typeof sessionStorage !== "undefined") {
+    sessionStorage.setItem(name, value);
+  }
+};
+
+const getItem = (name) => {
+  if (typeof sessionStorage !== "undefined") {
+    return sessionStorage.getItem(name);
+  } else {
+    return false;
+  }
+};
+
+const collapsibles = document.getElementsByClassName("collapsible");
+for (const collapsible of collapsibles) {
+  // Active
+  {
+    const name = getName(collapsible);
+    const active = getItem(name);
+    if (active === "true") {
+      collapsible.classList.add("active");
+      const content = getContent(collapsible);
+      content.style.display = "block";
+    }
+  }
+
+  // Click event
+  collapsible.addEventListener("click", function () {
+    this.classList.toggle("active");
+    const name = getName(this);
+    const content = getContent(this);
+    if (content.style.display === "block") {
+      setItem(name, false);
+      content.style.display = "none";
+    } else {
+      setItem(name, true);
+      content.style.display = "block";
+    }
+  });
+}
+`;
+/**
+ * Build list
+ * @param object Object
+ * @returns JSX
+ */
+const buildList = (object) => {
+    // Check
+    if (!object)
+        return;
+    // Keys
+    const keys = Object.keys(object);
+    // Remove name & href
+    const nameIndex = keys.indexOf("name");
+    if (nameIndex !== -1)
+        keys.splice(nameIndex, 1);
+    const hrefIndex = keys.indexOf("href");
+    if (hrefIndex !== -1)
+        keys.splice(hrefIndex, 1);
+    // Check
+    if (!keys.length)
+        return;
+    // Return element
+    return (typedoc_1.JSX.createElement("ul", { class: "tsd-index list " }, Object.keys(object).map((key) => {
+        if (key === "name" || key === "href")
+            return;
+        const item = object[key];
+        const name = item.name;
+        const href = item.href;
+        const subItem = buildList(item);
+        return (typedoc_1.JSX.createElement("li", { class: "tsd-kind-module" }, subItem ? (typedoc_1.JSX.createElement(typedoc_1.JSX.Fragment, null,
+            typedoc_1.JSX.createElement("div", { class: "with-collapsible tsd-kind-module" },
+                typedoc_1.JSX.createElement("a", { href: href, class: "tsd-kind-icon" }, name),
+                typedoc_1.JSX.createElement("button", { type: "button", class: "collapsible" })),
+            typedoc_1.JSX.createElement("div", { class: "content" }, buildList(item)))) : (typedoc_1.JSX.createElement("a", { href: href, class: "tsd-kind-icon" }, name))));
+    })));
+};
 /**
  * The theme context is where all of the partials live for rendering a theme,
  * in addition to some helper functions.
@@ -28,35 +158,6 @@ class NavigationOverrideThemeContext extends typedoc_1.DefaultThemeRenderContext
                     init = init[p];
                 });
             });
-            const buildList = (object) => {
-                // Check
-                if (!object)
-                    return;
-                // Keys
-                const keys = Object.keys(object);
-                // Remove name & href
-                const nameIndex = keys.indexOf("name");
-                if (nameIndex !== -1)
-                    keys.splice(nameIndex, 1);
-                const hrefIndex = keys.indexOf("href");
-                if (hrefIndex !== -1)
-                    keys.splice(hrefIndex, 1);
-                // Check
-                if (!keys.length)
-                    return;
-                // Return element
-                return (typedoc_1.JSX.createElement("ul", { class: "tsd-index list " }, Object.keys(object).map((key) => {
-                    if (key === "name" || key === "href")
-                        return;
-                    const item = object[key];
-                    const subItem = buildList(item);
-                    return (typedoc_1.JSX.createElement("li", { class: "tsd-kind-module" }, subItem ? (typedoc_1.JSX.createElement(typedoc_1.JSX.Fragment, null,
-                        typedoc_1.JSX.createElement("div", { class: "with-collapsible tsd-kind-module" },
-                            typedoc_1.JSX.createElement("a", { href: item.href, class: "tsd-kind-icon" }, item.name),
-                            typedoc_1.JSX.createElement("button", { type: "button", class: "collapsible" }, "+")),
-                        typedoc_1.JSX.createElement("div", { class: "content" }, buildList(item)))) : (typedoc_1.JSX.createElement("a", { href: item.href, class: "tsd-kind-icon" }, item.name))));
-                })));
-            };
             return typedoc_1.JSX.createElement("div", { class: "nav" }, buildList(nav));
         };
     }
@@ -78,59 +179,9 @@ exports.AirthiumTheme = AirthiumTheme;
  */
 function load(app) {
     app.renderer.hooks.on("body.begin", () => (typedoc_1.JSX.createElement("style", null,
-        typedoc_1.JSX.createElement(typedoc_1.JSX.Raw, { html: `
-.nav {
-  padding-left: 10px;
-}
-
-ul {
-  padding-inline-start: 10px !important;
-  list-style: disc;
-}
-
-.with-collapsible {
-  display: flex;
-  align-items: center;
-}
-
-.collapsible {
-  background-color: #eee;
-  color: #444;
-  cursor: pointer;
-  padding: 0 0.25em;
-  margin-left: 0.5em;
-  border: none;
-  outline: none;
-  font-size: 1.5em;
-}
-
-.active, .collapsible:hover {
-  background-color: #ccc;
-}
-
-.content {
-  display: none;
-  overflow: hidden;
-}
-` }))));
+        typedoc_1.JSX.createElement(typedoc_1.JSX.Raw, { html: style }))));
     app.renderer.hooks.on("body.end", () => (typedoc_1.JSX.createElement("script", null,
-        typedoc_1.JSX.createElement(typedoc_1.JSX.Raw, { html: `
-const collapsibles = document.getElementsByClassName("collapsible");
-for (let i = 0; i < collapsibles.length; i++) {
-  collapsibles[i].addEventListener("click", function() {
-    this.classList.toggle("active");
-    //const name = this.parentNode.firstChild.innerHTML
-    const content = this.parentNode.parentNode.lastChild;
-    if (content.style.display === "block") {
-      //sessionStorage.setItem(name, false)
-      content.style.display = "none";
-    } else {
-      //sessionStorage.setItem(name, true)
-      content.style.display = "block";
-    }
-  });
-}
-` }))));
+        typedoc_1.JSX.createElement(typedoc_1.JSX.Raw, { html: script }))));
     app.renderer.defineTheme("airthium", AirthiumTheme);
 }
 exports.load = load;

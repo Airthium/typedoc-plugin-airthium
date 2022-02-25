@@ -11,6 +11,159 @@ import {
   ReflectionKind,
 } from "typedoc";
 
+const style = `.nav {
+  padding-left: 10px;
+}
+
+.nav ul {
+  padding-inline-start: 10px !important;
+  margin: 5px 0 10px 0;
+  list-style: disc;
+}
+
+.with-collapsible {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.collapsible {
+  background-color: #4da6ff;
+  color: #fff;
+  cursor: pointer;
+  padding: 0 0.25em;
+  margin-left: 0.5em;
+  border: none;
+  outline: none;
+  font-size: 1.5em;
+}
+
+.collapsible::after {
+  content: "\\0002B";
+}
+
+.collapsible.active::after {
+  content: "\\02212";
+}
+
+.active, .collapsible:hover {
+  background-color: #0672de;
+}
+
+.content {
+  display: none;
+  overflow: hidden;
+}
+`;
+
+const script = `const getName = (collapsible) => {
+  return collapsible.previousSibling.innerHTML;
+};
+
+const getContent = (collapsible) => {
+  return collapsible.parentNode.nextSibling;
+};
+
+const setItem = (name, value) => {
+  if (typeof sessionStorage !== "undefined") {
+    sessionStorage.setItem(name, value);
+  }
+};
+
+const getItem = (name) => {
+  if (typeof sessionStorage !== "undefined") {
+    return sessionStorage.getItem(name);
+  } else {
+    return false;
+  }
+};
+
+const collapsibles = document.getElementsByClassName("collapsible");
+for (const collapsible of collapsibles) {
+  // Active
+  {
+    const name = getName(collapsible);
+    const active = getItem(name);
+    if (active === "true") {
+      collapsible.classList.add("active");
+      const content = getContent(collapsible);
+      content.style.display = "block";
+    }
+  }
+
+  // Click event
+  collapsible.addEventListener("click", function () {
+    this.classList.toggle("active");
+    const name = getName(this);
+    const content = getContent(this);
+    if (content.style.display === "block") {
+      setItem(name, false);
+      content.style.display = "none";
+    } else {
+      setItem(name, true);
+      content.style.display = "block";
+    }
+  });
+}
+`;
+
+/**
+ * Build list
+ * @param object Object
+ * @returns JSX
+ */
+const buildList = (object: any): any => {
+  // Check
+  if (!object) return;
+
+  // Keys
+  const keys = Object.keys(object);
+
+  // Remove name & href
+  const nameIndex = keys.indexOf("name");
+  if (nameIndex !== -1) keys.splice(nameIndex, 1);
+  const hrefIndex = keys.indexOf("href");
+  if (hrefIndex !== -1) keys.splice(hrefIndex, 1);
+
+  // Check
+  if (!keys.length) return;
+
+  // Return element
+  return (
+    <ul class="tsd-index list ">
+      {Object.keys(object).map((key) => {
+        if (key === "name" || key === "href") return;
+
+        const item = object[key];
+        const name = item.name;
+        const href = item.href;
+
+        const subItem = buildList(item);
+
+        return (
+          <li class="tsd-kind-module">
+            {subItem ? (
+              <>
+                <div class="with-collapsible tsd-kind-module">
+                  <a href={href} class="tsd-kind-icon">
+                    {name}
+                  </a>
+                  <button type="button" class="collapsible" />
+                </div>
+                <div class="content">{buildList(item)}</div>
+              </>
+            ) : (
+              <a href={href} class="tsd-kind-icon">
+                {name}
+              </a>
+            )}
+          </li>
+        );
+      })}
+    </ul>
+  );
+};
+
 /**
  * The theme context is where all of the partials live for rendering a theme,
  * in addition to some helper functions.
@@ -44,57 +197,6 @@ export class NavigationOverrideThemeContext extends DefaultThemeRenderContext {
         });
       });
 
-      const buildList = (object: any): any => {
-        // Check
-        if (!object) return;
-
-        // Keys
-        const keys = Object.keys(object);
-
-        // Remove name & href
-        const nameIndex = keys.indexOf("name");
-        if (nameIndex !== -1) keys.splice(nameIndex, 1);
-        const hrefIndex = keys.indexOf("href");
-        if (hrefIndex !== -1) keys.splice(hrefIndex, 1);
-
-        // Check
-        if (!keys.length) return;
-
-        // Return element
-        return (
-          <ul class="tsd-index list ">
-            {Object.keys(object).map((key) => {
-              if (key === "name" || key === "href") return;
-
-              const item = object[key];
-              const subItem = buildList(item);
-
-              return (
-                <li class="tsd-kind-module">
-                  {subItem ? (
-                    <>
-                      <div class="with-collapsible tsd-kind-module">
-                        <a href={item.href} class="tsd-kind-icon">
-                          {item.name}
-                        </a>
-                        <button type="button" class="collapsible">
-                          &#43;
-                        </button>
-                      </div>
-                      <div class="content">{buildList(item)}</div>
-                    </>
-                  ) : (
-                    <a href={item.href} class="tsd-kind-icon">
-                      {item.name}
-                    </a>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-        );
-      };
-
       return <div class="nav">{buildList(nav)}</div>;
     };
   }
@@ -121,66 +223,12 @@ export class AirthiumTheme extends DefaultTheme {
 export function load(app: Application) {
   app.renderer.hooks.on("body.begin", () => (
     <style>
-      <JSX.Raw
-        html={`
-.nav {
-  padding-left: 10px;
-}
-
-ul {
-  padding-inline-start: 10px !important;
-  list-style: disc;
-}
-
-.with-collapsible {
-  display: flex;
-  align-items: center;
-}
-
-.collapsible {
-  background-color: #eee;
-  color: #444;
-  cursor: pointer;
-  padding: 0 0.25em;
-  margin-left: 0.5em;
-  border: none;
-  outline: none;
-  font-size: 1.5em;
-}
-
-.active, .collapsible:hover {
-  background-color: #ccc;
-}
-
-.content {
-  display: none;
-  overflow: hidden;
-}
-`}
-      />
+      <JSX.Raw html={style} />
     </style>
   ));
   app.renderer.hooks.on("body.end", () => (
     <script>
-      <JSX.Raw
-        html={`
-const collapsibles = document.getElementsByClassName("collapsible");
-for (let i = 0; i < collapsibles.length; i++) {
-  collapsibles[i].addEventListener("click", function() {
-    this.classList.toggle("active");
-    //const name = this.parentNode.firstChild.innerHTML
-    const content = this.parentNode.parentNode.lastChild;
-    if (content.style.display === "block") {
-      //sessionStorage.setItem(name, false)
-      content.style.display = "none";
-    } else {
-      //sessionStorage.setItem(name, true)
-      content.style.display = "block";
-    }
-  });
-}
-`}
-      />
+      <JSX.Raw html={script} />
     </script>
   ));
 
