@@ -21,6 +21,10 @@ const style = `.nav {
   list-style: disc;
 }
 
+.nav ul li {
+  line-height: 28px;
+}
+
 .with-collapsible {
   display: flex;
   align-items: center;
