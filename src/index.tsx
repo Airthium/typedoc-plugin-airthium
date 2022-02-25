@@ -11,13 +11,17 @@ import {
   ReflectionKind,
 } from "typedoc";
 
-const style = `.nav {
+const style = `#tsd-widgets {
+  display: none;
+}
+
+.nav {
   padding-left: 10px;
 }
 
 .nav ul {
   padding-inline-start: 10px !important;
-  margin: 5px 0 10px 0;
+  margin: 0px 0 5px 0;
   list-style: disc;
 }
 
