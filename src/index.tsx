@@ -64,8 +64,8 @@ const style = `.nav {
 }
 `;
 
-const script = `const getName = (collapsible) => {
-  return collapsible.previousSibling.innerHTML;
+const script = `const getHref = (collapsible) => {
+  return collapsible.previousSibling.href;
 };
 
 const getContent = (collapsible) => {
@@ -90,8 +90,8 @@ const collapsibles = document.getElementsByClassName("collapsible");
 for (const collapsible of collapsibles) {
   // Active
   {
-    const name = getName(collapsible);
-    const active = getItem(name);
+    const url = getHref(collapsible);
+    const active = getItem(url);
     if (active === "true") {
       collapsible.classList.add("active");
       const content = getContent(collapsible);
@@ -102,13 +102,13 @@ for (const collapsible of collapsibles) {
   // Click event
   collapsible.addEventListener("click", function () {
     this.classList.toggle("active");
-    const name = getName(this);
+    const url = getHref(this);
     const content = getContent(this);
     if (content.style.display === "block") {
-      setItem(name, false);
+      setItem(url, false);
       content.style.display = "none";
     } else {
-      setItem(name, true);
+      setItem(url, true);
       content.style.display = "block";
     }
   });
