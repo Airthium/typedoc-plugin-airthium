@@ -33,12 +33,17 @@ const buildList = (object) => {
         const name = item.name;
         const href = item.href;
         const subItem = buildList(item);
-        return (typedoc_1.JSX.createElement("li", { class: "tsd-kind-module" }, subItem ? (typedoc_1.JSX.createElement(typedoc_1.JSX.Fragment, null,
-            typedoc_1.JSX.createElement("div", { class: "with-collapsible tsd-kind-module" },
-                typedoc_1.JSX.createElement("span", { style: "display: none;" }, completeName),
-                typedoc_1.JSX.createElement("a", { href: href, class: "tsd-kind-icon" }, name),
-                typedoc_1.JSX.createElement("button", { type: "button", class: "collapsible" })),
-            typedoc_1.JSX.createElement("div", { class: "content" }, buildList(item)))) : (typedoc_1.JSX.createElement("a", { href: href, class: "tsd-kind-icon" }, name))));
+        if (subItem)
+            return (typedoc_1.JSX.createElement("li", { class: "tsd-kind-module" },
+                typedoc_1.JSX.createElement(typedoc_1.JSX.Fragment, null,
+                    typedoc_1.JSX.createElement("div", { class: "with-collapsible tsd-kind-module" },
+                        typedoc_1.JSX.createElement("span", { style: "display: none;" }, completeName),
+                        typedoc_1.JSX.createElement("a", { href: href, class: "tsd-kind-icon" }, name),
+                        typedoc_1.JSX.createElement("button", { type: "button", class: "collapsible" })),
+                    typedoc_1.JSX.createElement("div", { class: "content" }, buildList(item)))));
+        else
+            return (typedoc_1.JSX.createElement("li", { class: "tsd-kind-module" },
+                typedoc_1.JSX.createElement("a", { href: href, class: "tsd-kind-icon" }, name)));
     })));
 };
 /**
@@ -55,14 +60,17 @@ const buildNav = (props, { urlTo }) => {
     modules.forEach((module) => {
         const name = module.name;
         const href = urlTo(module);
-        const path = name.split(".");
+        const paths = name.split(".");
         let init = nav;
-        path.forEach((p, index) => {
-            if (!init[p])
-                init[p] = { name: p };
-            if (index === path.length - 1)
-                init[p] = { completeName: name, name: p, href };
-            init = init[p];
+        paths.forEach((path, index) => {
+            if (!init[path])
+                init[path] = {
+                    completeName: paths.slice(0, index + 1).join("."),
+                    name: path,
+                };
+            if (index === paths.length - 1)
+                init[path] = { completeName: name, name: path, href };
+            init = init[path];
         });
     });
     // Return
@@ -122,6 +130,10 @@ exports.navScript = `const getCompleteName = (collapsible) => {
 exports.navStyle = `
   .nav {
     padding-left: 10px;
+  }
+
+  .nav a:not([href]):hover {
+    text-decoration: none;
   }
   
   .nav ul {

@@ -47,9 +47,9 @@ const buildList = (object: NavItem): JSX.Element | undefined => {
 
         const subItem = buildList(item);
 
-        return (
-          <li class="tsd-kind-module">
-            {subItem ? (
+        if (subItem)
+          return (
+            <li class="tsd-kind-module">
               <>
                 <div class="with-collapsible tsd-kind-module">
                   <span style="display: none;">{completeName}</span>
@@ -60,13 +60,16 @@ const buildList = (object: NavItem): JSX.Element | undefined => {
                 </div>
                 <div class="content">{buildList(item)}</div>
               </>
-            ) : (
+            </li>
+          );
+        else
+          return (
+            <li class="tsd-kind-module">
               <a href={href} class="tsd-kind-icon">
                 {name}
               </a>
-            )}
-          </li>
-        );
+            </li>
+          );
       })}
     </ul>
   );
@@ -94,16 +97,20 @@ export const buildNav = (
     const name = module.name;
     const href = urlTo(module);
 
-    const path = name.split(".");
+    const paths = name.split(".");
 
     let init = nav;
-    path.forEach((p, index) => {
-      if (!init[p]) init[p] = { name: p };
+    paths.forEach((path, index) => {
+      if (!init[path])
+        init[path] = {
+          completeName: paths.slice(0, index + 1).join("."),
+          name: path,
+        };
 
-      if (index === path.length - 1)
-        init[p] = { completeName: name, name: p, href };
+      if (index === paths.length - 1)
+        init[path] = { completeName: name, name: path, href };
 
-      init = init[p] as NavItem;
+      init = init[path] as NavItem;
     });
   });
 
@@ -165,6 +172,10 @@ export const navScript = `const getCompleteName = (collapsible) => {
 export const navStyle = `
   .nav {
     padding-left: 10px;
+  }
+
+  .nav a:not([href]):hover {
+    text-decoration: none;
   }
   
   .nav ul {
