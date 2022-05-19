@@ -24,5 +24,5 @@
     "predocs": "tsc",
     "docs": "typedoc --tsconfig tsconfig.test.json --entryPoints test --entryPointStrategy expand --plugin ./dist/index.js  --theme airthium"
   },
-  "packageManager": "yarn@3.2.0"
+  "packageManager": "yarn@3.2.1"
 }
