@@ -8,8 +8,12 @@ const nav_1 = require("./nav");
 /**
  * Global style
  */
-const globalStyle = `#tsd-widgets {
+const globalStyle = `.tsd-filter-visibility {
   display: none;
+}
+
+#theme{
+  padding: 5px;
 }`;
 /**
  * Airthium theme context

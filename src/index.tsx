@@ -16,8 +16,12 @@ import { buildNav, navScript, navStyle } from "./nav";
 /**
  * Global style
  */
-const globalStyle = `#tsd-widgets {
+const globalStyle = `.tsd-filter-visibility {
   display: none;
+}
+
+#theme{
+  padding: 5px;
 }`;
 
 /**
