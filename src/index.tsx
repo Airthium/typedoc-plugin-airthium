@@ -11,16 +11,12 @@ import {
 } from "typedoc";
 
 import { buildBreadcrumbs } from "./breadcrumb";
-import { buildNav, navScript, navStyle } from "./nav";
+import { buildNav, navStyle } from "./nav";
 
 /**
  * Global style
  */
-const globalStyle = `.tsd-filter-visibility {
-  display: none;
-}
-
-#theme{
+const globalStyle = `#theme{
   padding: 5px;
 }`;
 
@@ -38,9 +34,7 @@ export class AirthiumThemeContext extends DefaultThemeRenderContext {
 
     // Override navigation
     this.navigation = (props: PageEvent<Reflection>) => {
-      return buildNav(props, {
-        urlTo: this.urlTo,
-      });
+      return buildNav(this, props);
     };
   }
 }
@@ -78,14 +72,6 @@ export function load(app: Application) {
     <style>
       <JSX.Raw html={style} />
     </style>
-  ));
-
-  // Scripts
-  const script = navScript;
-  app.renderer.hooks.on("body.end", () => (
-    <script>
-      <JSX.Raw html={script} />
-    </script>
   ));
 
   app.renderer.defineTheme("airthium", AirthiumTheme);

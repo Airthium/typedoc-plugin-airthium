@@ -1,185 +1,147 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.navStyle = exports.navScript = exports.buildNav = void 0;
+exports.buildNav = exports.navStyle = void 0;
 const typedoc_1 = require("typedoc");
-/**
- * Build list
- * @param object Object
- * @returns JSX
- */
-const buildList = (object) => {
-    // Check
-    if (!object)
-        return;
-    // Keys
-    const keys = Object.keys(object);
-    // Remove completeName, name & href
-    const completeNameIndex = keys.indexOf("completeName");
-    if (completeNameIndex !== -1)
-        keys.splice(completeNameIndex, 1);
-    const nameIndex = keys.indexOf("name");
-    if (nameIndex !== -1)
-        keys.splice(nameIndex, 1);
-    const hrefIndex = keys.indexOf("href");
-    if (hrefIndex !== -1)
-        keys.splice(hrefIndex, 1);
-    // Check
-    if (!keys.length)
-        return;
-    // Return element
-    return (typedoc_1.JSX.createElement("ul", { class: "tsd-index list " }, keys.map((key) => {
-        const item = object[key];
-        const completeName = item.completeName;
-        const name = item.name;
-        const href = item.href;
-        const subItem = buildList(item);
-        if (subItem)
-            return (typedoc_1.JSX.createElement("li", { class: "tsd-kind-module" },
-                typedoc_1.JSX.createElement(typedoc_1.JSX.Fragment, null,
-                    typedoc_1.JSX.createElement("div", { class: "with-collapsible tsd-kind-module" },
-                        typedoc_1.JSX.createElement("span", { style: "display: none;" }, completeName),
-                        typedoc_1.JSX.createElement("a", { href: href, class: "tsd-kind-icon" }, name),
-                        typedoc_1.JSX.createElement("button", { type: "button", class: "collapsible" })),
-                    typedoc_1.JSX.createElement("div", { class: "content" }, buildList(item)))));
-        else
-            return (typedoc_1.JSX.createElement("li", { class: "tsd-kind-module" },
-                typedoc_1.JSX.createElement("a", { href: href, class: "tsd-kind-icon" }, name)));
-    })));
-};
-/**
- * Build nav
- * @param props Props
- * @param func { urlTo }
- * @returns Nav
- */
-const buildNav = (props, { urlTo }) => {
-    const nav = {};
-    // Get modules
-    const modules = props.model.project.getChildrenByKind(typedoc_1.ReflectionKind.SomeModule);
-    // Get modules informations
-    modules.forEach((module) => {
-        const name = module.name;
-        const href = urlTo(module);
-        const paths = name.split(".");
-        let init = nav;
-        paths.forEach((path, index) => {
-            if (!init[path])
-                init[path] = {
-                    completeName: paths.slice(0, index + 1).join("."),
-                    name: path,
-                };
-            if (index === paths.length - 1)
-                init[path] = { completeName: name, name: path, href };
-            init = init[path];
-        });
-    });
-    // Return
-    return typedoc_1.JSX.createElement("div", { class: "nav" }, buildList(nav));
+const icon_1 = require("typedoc/dist/lib/output/themes/default/partials/icon");
+const lib_1 = require("typedoc/dist/lib/output/themes/lib");
+exports.navStyle = `.padding-left-25 {
+  padding-left: 25px !important;
+}`;
+class Tree {
+    constructor(id, module) {
+        this.getChild = (id) => {
+            let node;
+            this.children.some((n) => {
+                if (n.id === id) {
+                    node = n;
+                    return true;
+                }
+            });
+            return node;
+        };
+        this.id = id;
+        this.module = module;
+        this.children = [];
+    }
+}
+const buildNav = (context, props) => {
+    return (typedoc_1.JSX.createElement(typedoc_1.JSX.Fragment, null,
+        settings(),
+        primaryNavigation(context, props),
+        secondaryNavigation(context, props)));
 };
 exports.buildNav = buildNav;
-exports.navScript = `const getCompleteName = (collapsible) => {
-    return collapsible.previousSibling.previousSibling.innerHTML;
-  };
-  
-  const getContent = (collapsible) => {
-    return collapsible.parentNode.nextSibling;
-  };
-  
-  const setItem = (name, value) => {
-    if (typeof sessionStorage !== "undefined") {
-      sessionStorage.setItem(name, value);
-    }
-  };
-  
-  const getItem = (name) => {
-    if (typeof sessionStorage !== "undefined") {
-      return sessionStorage.getItem(name);
-    } else {
-      return false;
-    }
-  };
-  
-  const collapsibles = document.getElementsByClassName("collapsible");
-  for (const collapsible of collapsibles) {
-    // Active
-    {
-      const completeName = getCompleteName(collapsible);
-      const active = getItem(completeName);
-      if (active === "true") {
-        collapsible.classList.add("active");
-        const content = getContent(collapsible);
-        content.style.display = "block";
-      }
-    }
-  
-    // Click event
-    collapsible.addEventListener("click", function () {
-      this.classList.toggle("active");
-      const completeName = getCompleteName(this);
-      const content = getContent(this);
-      if (content.style.display === "block") {
-        setItem(completeName, false);
-        content.style.display = "none";
-      } else {
-        setItem(completeName, true);
-        content.style.display = "block";
-      }
+const settings = () => (typedoc_1.JSX.createElement("div", { class: "tsd-navigation settings" },
+    typedoc_1.JSX.createElement("details", { class: "tsd-index-accordion", open: false },
+        typedoc_1.JSX.createElement("summary", { class: "tsd-accordion-summary" },
+            typedoc_1.JSX.createElement("h3", null,
+                icon_1.icons.chevronDown(),
+                " Settings")),
+        typedoc_1.JSX.createElement("div", { class: "tsd-accordion-details" },
+            typedoc_1.JSX.createElement("div", { class: "tsd-theme-toggle" },
+                typedoc_1.JSX.createElement("h4", { class: "uppercase" }, "Theme"),
+                typedoc_1.JSX.createElement("select", { id: "theme" },
+                    typedoc_1.JSX.createElement("option", { value: "os" }, "OS"),
+                    typedoc_1.JSX.createElement("option", { value: "light" }, "Light"),
+                    typedoc_1.JSX.createElement("option", { value: "dark" }, "Dark")))))));
+const primaryNavigation = (context, props) => {
+    // Create the navigation for the current page
+    const modules = props.model.project.getChildrenByKind(typedoc_1.ReflectionKind.SomeModule);
+    const tree = new Tree("root");
+    modules.forEach((module) => {
+        const names = module.name.split(".");
+        names.reduce((prev, name) => {
+            let node = prev.getChild(name);
+            if (!node) {
+                node = new Tree(name, module);
+                prev.children.push(node);
+            }
+            return node;
+        }, tree);
     });
-  }
-  `;
-exports.navStyle = `
-  .nav {
-    padding-left: 10px;
-  }
-
-  .nav a:not([href]):hover {
-    text-decoration: none;
-  }
-  
-  .nav ul {
-    padding-inline-start: 10px !important;
-    margin: 0px 0 5px 0;
-    list-style: disc;
-  }
-  
-  .nav ul li {
-    line-height: 30px;
-  }
-  
-  .nav .tsd-kind-icon:before {
-    margin: 0 3px 5px 0 !important;
-  }
-  
-  .with-collapsible {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  
-  .collapsible {
-    background-color: #4da6ff;
-    color: #fff;
-    cursor: pointer;
-    padding: 0 0.25em;
-    margin-left: 0.5em;
-    border: none;
-    outline: none;
-    font-size: 1.5em;
-  }
-  
-  .collapsible::after {
-    content: "\\0002B";
-  }
-  
-  .collapsible.active::after {
-    content: "\\02212";
-  }
-  
-  .active, .collapsible:hover {
-    background-color: #0672de;
-  }
-  
-  .content {
-    display: none;
-    overflow: hidden;
-  }`;
+    const selected = props.model.isProject();
+    const current = selected || modules.some((mod) => inPath(mod, props.model));
+    return (typedoc_1.JSX.createElement("nav", { class: "tsd-navigation primary" },
+        typedoc_1.JSX.createElement("ul", null,
+            typedoc_1.JSX.createElement("li", { class: (0, lib_1.classNames)({ current, selected }) },
+                typedoc_1.JSX.createElement("a", { href: context.urlTo(props.model.project) }, props.project.name),
+                typedoc_1.JSX.createElement("ul", null, tree.children.map((child) => link(child)))))));
+    function link(mod) {
+        if (!mod.module)
+            return;
+        const current = inPath(mod.module, props.model);
+        const selected = mod.module.name === props.model.name;
+        let childNav;
+        const childModules = mod.children;
+        if (childModules === null || childModules === void 0 ? void 0 : childModules.length)
+            return (typedoc_1.JSX.createElement("li", { class: (0, lib_1.classNames)({ current, selected, deprecated: mod.module.isDeprecated() }, mod.module.cssClasses) },
+                typedoc_1.JSX.createElement("details", { class: "tsd-index-accordion", open: false },
+                    typedoc_1.JSX.createElement("summary", { class: "tsd-accordion-summary" },
+                        typedoc_1.JSX.createElement("a", { href: context.urlTo(mod.module) },
+                            icon_1.icons.chevronDown(),
+                            " ",
+                            mod.id)),
+                    typedoc_1.JSX.createElement("div", { class: "tsd-accordion-details" },
+                        typedoc_1.JSX.createElement("ul", null,
+                            typedoc_1.JSX.createElement("li", { class: (0, lib_1.classNames)({
+                                    current,
+                                    selected,
+                                    deprecated: mod.module.isDeprecated(),
+                                }, mod.module.cssClasses) },
+                                typedoc_1.JSX.createElement("a", { class: "padding-left-25", href: context.urlTo(mod.module) }, "Index"),
+                                childNav),
+                            childModules.map(link))),
+                    childNav)));
+        return (typedoc_1.JSX.createElement("li", { class: (0, lib_1.classNames)({ current, selected, deprecated: mod.module.isDeprecated() }, mod.module.cssClasses) },
+            typedoc_1.JSX.createElement("a", { class: "padding-left-25", href: context.urlTo(mod.module) }, mod.id),
+            childNav));
+    }
+};
+const secondaryNavigation = (context, props) => {
+    var _a;
+    // Multiple entry points, and on main project page.
+    if (props.model.isProject() &&
+        props.model.getChildrenByKind(typedoc_1.ReflectionKind.Module).length) {
+        return;
+    }
+    const effectivePageParent = (props.model instanceof typedoc_1.ContainerReflection &&
+        ((_a = props.model.children) === null || _a === void 0 ? void 0 : _a.length)) ||
+        props.model.isProject()
+        ? props.model
+        : props.model.parent;
+    const children = effectivePageParent.children || [];
+    const pageNavigation = children
+        .filter((child) => !child.kindOf(typedoc_1.ReflectionKind.SomeModule))
+        .map((child) => {
+        return (typedoc_1.JSX.createElement("li", { class: (0, lib_1.classNames)({
+                deprecated: child.isDeprecated(),
+                current: props.model === child,
+            }, child.cssClasses) },
+            typedoc_1.JSX.createElement("a", { href: context.urlTo(child), class: "tsd-index-link" },
+                icon_1.icons[child.kind](),
+                (0, lib_1.wbr)(child.name))));
+    });
+    if (effectivePageParent.kindOf(typedoc_1.ReflectionKind.SomeModule | typedoc_1.ReflectionKind.Project)) {
+        return (typedoc_1.JSX.createElement("nav", { class: "tsd-navigation secondary menu-sticky" }, !!pageNavigation.length && typedoc_1.JSX.createElement("ul", null, pageNavigation)));
+    }
+    return (typedoc_1.JSX.createElement("nav", { class: "tsd-navigation secondary menu-sticky" },
+        typedoc_1.JSX.createElement("ul", null,
+            typedoc_1.JSX.createElement("li", { class: (0, lib_1.classNames)({
+                    deprecated: effectivePageParent.isDeprecated(),
+                    current: effectivePageParent === props.model,
+                }, effectivePageParent.cssClasses) },
+                typedoc_1.JSX.createElement("a", { href: context.urlTo(effectivePageParent), class: "tsd-index-link" },
+                    icon_1.icons[effectivePageParent.kind](),
+                    typedoc_1.JSX.createElement("span", null, (0, lib_1.wbr)(effectivePageParent.name))),
+                !!pageNavigation.length && typedoc_1.JSX.createElement("ul", null, pageNavigation)))));
+};
+function inPath(thisPage, toCheck) {
+    while (toCheck) {
+        if (toCheck.isProject())
+            return false;
+        if (thisPage === toCheck)
+            return true;
+        toCheck = toCheck.parent;
+    }
+    return false;
+}

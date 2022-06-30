@@ -1,227 +1,260 @@
 import {
+  ContainerReflection,
   DeclarationReflection,
+  DefaultThemeRenderContext,
   JSX,
   PageEvent,
   Reflection,
   ReflectionKind,
 } from "typedoc";
+import { icons } from "typedoc/dist/lib/output/themes/default/partials/icon";
+import { classNames, wbr } from "typedoc/dist/lib/output/themes/lib";
 
-export interface NavItem {
-  name?: string;
-  completeName?: string;
-  href?: string;
-  [key: string]: string | NavItem | undefined;
+export const navStyle = `.padding-left-25 {
+  padding-left: 25px !important;
+}`;
+
+class Tree {
+  id: string;
+  module?: DeclarationReflection;
+  children: any[];
+
+  constructor(id: string, module?: DeclarationReflection) {
+    this.id = id;
+    this.module = module;
+    this.children = [];
+  }
+
+  getChild = (id: string): Tree | undefined => {
+    let node;
+    this.children.some((n) => {
+      if (n.id === id) {
+        node = n;
+        return true;
+      }
+    });
+    return node;
+  };
 }
 
-/**
- * Build list
- * @param object Object
- * @returns JSX
- */
-const buildList = (object: NavItem): JSX.Element | undefined => {
-  // Check
-  if (!object) return;
-
-  // Keys
-  const keys = Object.keys(object);
-
-  // Remove completeName, name & href
-  const completeNameIndex = keys.indexOf("completeName");
-  if (completeNameIndex !== -1) keys.splice(completeNameIndex, 1);
-  const nameIndex = keys.indexOf("name");
-  if (nameIndex !== -1) keys.splice(nameIndex, 1);
-  const hrefIndex = keys.indexOf("href");
-  if (hrefIndex !== -1) keys.splice(hrefIndex, 1);
-
-  // Check
-  if (!keys.length) return;
-
-  // Return element
+export const buildNav = (
+  context: DefaultThemeRenderContext,
+  props: PageEvent<Reflection>
+) => {
   return (
-    <ul class="tsd-index list ">
-      {keys.map((key) => {
-        const item = object[key] as NavItem;
-        const completeName = item.completeName;
-        const name = item.name;
-        const href = item.href;
-
-        const subItem = buildList(item);
-
-        if (subItem)
-          return (
-            <li class="tsd-kind-module">
-              <>
-                <div class="with-collapsible tsd-kind-module">
-                  <span style="display: none;">{completeName}</span>
-                  <a href={href} class="tsd-kind-icon">
-                    {name}
-                  </a>
-                  <button type="button" class="collapsible" />
-                </div>
-                <div class="content">{buildList(item)}</div>
-              </>
-            </li>
-          );
-        else
-          return (
-            <li class="tsd-kind-module">
-              <a href={href} class="tsd-kind-icon">
-                {name}
-              </a>
-            </li>
-          );
-      })}
-    </ul>
+    <>
+      {settings()}
+      {primaryNavigation(context, props)}
+      {secondaryNavigation(context, props)}
+    </>
   );
 };
 
-/**
- * Build nav
- * @param props Props
- * @param func { urlTo }
- * @returns Nav
- */
-export const buildNav = (
-  props: PageEvent<Reflection>,
-  { urlTo }: { urlTo: (module: DeclarationReflection) => string | undefined }
-): JSX.Element => {
-  const nav: NavItem = {};
+const settings = () => (
+  <div class="tsd-navigation settings">
+    <details class="tsd-index-accordion" open={false}>
+      <summary class="tsd-accordion-summary">
+        <h3>{icons.chevronDown()} Settings</h3>
+      </summary>
+      <div class="tsd-accordion-details">
+        <div class="tsd-theme-toggle">
+          <h4 class="uppercase">Theme</h4>
+          <select id="theme">
+            <option value="os">OS</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
+        </div>
+      </div>
+    </details>
+  </div>
+);
 
-  // Get modules
+const primaryNavigation = (
+  context: DefaultThemeRenderContext,
+  props: PageEvent<Reflection>
+) => {
+  // Create the navigation for the current page
+
   const modules = props.model.project.getChildrenByKind(
     ReflectionKind.SomeModule
   );
-
-  // Get modules informations
+  const tree = new Tree("root");
   modules.forEach((module) => {
-    const name = module.name;
-    const href = urlTo(module);
-
-    const paths = name.split(".");
-
-    let init = nav;
-    paths.forEach((path, index) => {
-      if (!init[path])
-        init[path] = {
-          completeName: paths.slice(0, index + 1).join("."),
-          name: path,
-        };
-
-      if (index === paths.length - 1)
-        init[path] = { completeName: name, name: path, href };
-
-      init = init[path] as NavItem;
-    });
+    const names = module.name.split(".");
+    names.reduce((prev: Tree, name: string) => {
+      let node = prev.getChild(name);
+      if (!node) {
+        node = new Tree(name, module);
+        prev.children.push(node);
+      }
+      return node;
+    }, tree);
   });
 
-  // Return
-  return <div class="nav">{buildList(nav)}</div>;
+  const selected = props.model.isProject();
+  const current = selected || modules.some((mod) => inPath(mod, props.model));
+
+  return (
+    <nav class="tsd-navigation primary">
+      <ul>
+        <li class={classNames({ current, selected })}>
+          <a href={context.urlTo(props.model.project)}>{props.project.name}</a>
+          <ul>{tree.children.map((child) => link(child))}</ul>
+        </li>
+      </ul>
+    </nav>
+  );
+
+  function link(mod: Tree) {
+    if (!mod.module) return;
+
+    const current = inPath(mod.module, props.model);
+    const selected = mod.module.name === props.model.name;
+    let childNav: JSX.Element | undefined;
+    const childModules = mod.children;
+    if (childModules?.length)
+      return (
+        <li
+          class={classNames(
+            { current, selected, deprecated: mod.module.isDeprecated() },
+            mod.module.cssClasses
+          )}
+        >
+          <details class="tsd-index-accordion" open={false}>
+            <summary class="tsd-accordion-summary">
+              <a href={context.urlTo(mod.module)}>
+                {icons.chevronDown()} {mod.id}
+              </a>
+            </summary>
+            <div class="tsd-accordion-details">
+              <ul>
+                <li
+                  class={classNames(
+                    {
+                      current,
+                      selected,
+                      deprecated: mod.module.isDeprecated(),
+                    },
+                    mod.module.cssClasses
+                  )}
+                >
+                  <a class="padding-left-25" href={context.urlTo(mod.module)}>
+                    Index
+                  </a>
+                  {childNav}
+                </li>
+                {childModules.map(link)}
+              </ul>
+            </div>
+            {childNav}
+          </details>
+        </li>
+      );
+
+    return (
+      <li
+        class={classNames(
+          { current, selected, deprecated: mod.module.isDeprecated() },
+          mod.module.cssClasses
+        )}
+      >
+        <a class="padding-left-25" href={context.urlTo(mod.module)}>
+          {mod.id}
+        </a>
+        {childNav}
+      </li>
+    );
+  }
 };
 
-export const navScript = `const getCompleteName = (collapsible) => {
-    return collapsible.previousSibling.previousSibling.innerHTML;
-  };
-  
-  const getContent = (collapsible) => {
-    return collapsible.parentNode.nextSibling;
-  };
-  
-  const setItem = (name, value) => {
-    if (typeof sessionStorage !== "undefined") {
-      sessionStorage.setItem(name, value);
-    }
-  };
-  
-  const getItem = (name) => {
-    if (typeof sessionStorage !== "undefined") {
-      return sessionStorage.getItem(name);
-    } else {
-      return false;
-    }
-  };
-  
-  const collapsibles = document.getElementsByClassName("collapsible");
-  for (const collapsible of collapsibles) {
-    // Active
-    {
-      const completeName = getCompleteName(collapsible);
-      const active = getItem(completeName);
-      if (active === "true") {
-        collapsible.classList.add("active");
-        const content = getContent(collapsible);
-        content.style.display = "block";
-      }
-    }
-  
-    // Click event
-    collapsible.addEventListener("click", function () {
-      this.classList.toggle("active");
-      const completeName = getCompleteName(this);
-      const content = getContent(this);
-      if (content.style.display === "block") {
-        setItem(completeName, false);
-        content.style.display = "none";
-      } else {
-        setItem(completeName, true);
-        content.style.display = "block";
-      }
+const secondaryNavigation = (
+  context: DefaultThemeRenderContext,
+  props: PageEvent<Reflection>
+) => {
+  // Multiple entry points, and on main project page.
+  if (
+    props.model.isProject() &&
+    props.model.getChildrenByKind(ReflectionKind.Module).length
+  ) {
+    return;
+  }
+
+  const effectivePageParent =
+    (props.model instanceof ContainerReflection &&
+      props.model.children?.length) ||
+    props.model.isProject()
+      ? props.model
+      : props.model.parent!;
+
+  const children = (effectivePageParent as ContainerReflection).children || [];
+
+  const pageNavigation = children
+    .filter((child) => !child.kindOf(ReflectionKind.SomeModule))
+    .map((child) => {
+      return (
+        <li
+          class={classNames(
+            {
+              deprecated: child.isDeprecated(),
+              current: props.model === child,
+            },
+            child.cssClasses
+          )}
+        >
+          <a href={context.urlTo(child)} class="tsd-index-link">
+            {icons[child.kind]()}
+            {wbr(child.name)}
+          </a>
+        </li>
+      );
     });
-  }
-  `;
 
-export const navStyle = `
-  .nav {
-    padding-left: 10px;
+  if (
+    effectivePageParent.kindOf(
+      ReflectionKind.SomeModule | ReflectionKind.Project
+    )
+  ) {
+    return (
+      <nav class="tsd-navigation secondary menu-sticky">
+        {!!pageNavigation.length && <ul>{pageNavigation}</ul>}
+      </nav>
+    );
   }
 
-  .nav a:not([href]):hover {
-    text-decoration: none;
+  return (
+    <nav class="tsd-navigation secondary menu-sticky">
+      <ul>
+        <li
+          class={classNames(
+            {
+              deprecated: effectivePageParent.isDeprecated(),
+              current: effectivePageParent === props.model,
+            },
+            effectivePageParent.cssClasses
+          )}
+        >
+          <a href={context.urlTo(effectivePageParent)} class="tsd-index-link">
+            {icons[effectivePageParent.kind]()}
+            <span>{wbr(effectivePageParent.name)}</span>
+          </a>
+          {!!pageNavigation.length && <ul>{pageNavigation}</ul>}
+        </li>
+      </ul>
+    </nav>
+  );
+};
+
+function inPath(
+  thisPage: Reflection,
+  toCheck: Reflection | undefined
+): boolean {
+  while (toCheck) {
+    if (toCheck.isProject()) return false;
+
+    if (thisPage === toCheck) return true;
+
+    toCheck = toCheck.parent;
   }
-  
-  .nav ul {
-    padding-inline-start: 10px !important;
-    margin: 0px 0 5px 0;
-    list-style: disc;
-  }
-  
-  .nav ul li {
-    line-height: 30px;
-  }
-  
-  .nav .tsd-kind-icon:before {
-    margin: 0 3px 5px 0 !important;
-  }
-  
-  .with-collapsible {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  
-  .collapsible {
-    background-color: #4da6ff;
-    color: #fff;
-    cursor: pointer;
-    padding: 0 0.25em;
-    margin-left: 0.5em;
-    border: none;
-    outline: none;
-    font-size: 1.5em;
-  }
-  
-  .collapsible::after {
-    content: "\\0002B";
-  }
-  
-  .collapsible.active::after {
-    content: "\\02212";
-  }
-  
-  .active, .collapsible:hover {
-    background-color: #0672de;
-  }
-  
-  .content {
-    display: none;
-    overflow: hidden;
-  }`;
+  return false;
+}

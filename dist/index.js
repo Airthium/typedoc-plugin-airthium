@@ -8,11 +8,7 @@ const nav_1 = require("./nav");
 /**
  * Global style
  */
-const globalStyle = `.tsd-filter-visibility {
-  display: none;
-}
-
-#theme{
+const globalStyle = `#theme{
   padding: 5px;
 }`;
 /**
@@ -27,9 +23,7 @@ class AirthiumThemeContext extends typedoc_1.DefaultThemeRenderContext {
         };
         // Override navigation
         this.navigation = (props) => {
-            return (0, nav_1.buildNav)(props, {
-                urlTo: this.urlTo,
-            });
+            return (0, nav_1.buildNav)(this, props);
         };
     }
 }
@@ -55,10 +49,6 @@ function load(app) {
     const style = globalStyle + nav_1.navStyle;
     app.renderer.hooks.on("body.begin", () => (typedoc_1.JSX.createElement("style", null,
         typedoc_1.JSX.createElement(typedoc_1.JSX.Raw, { html: style }))));
-    // Scripts
-    const script = nav_1.navScript;
-    app.renderer.hooks.on("body.end", () => (typedoc_1.JSX.createElement("script", null,
-        typedoc_1.JSX.createElement(typedoc_1.JSX.Raw, { html: script }))));
     app.renderer.defineTheme("airthium", AirthiumTheme);
 }
 exports.load = load;
