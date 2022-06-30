@@ -89,6 +89,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"typedoc@patch:typedoc@npm:0.23.1#.yarn/patches/typedoc-npm-0.23.1-f720835957.patch::locator=typedoc-plugin-airthium%40workspace%3A.":
+  version: 0.23.1
+  resolution: "typedoc@patch:typedoc@npm%3A0.23.1#.yarn/patches/typedoc-npm-0.23.1-f720835957.patch::version=0.23.1&hash=983153&locator=typedoc-plugin-airthium%40workspace%3A."
+  dependencies:
+    lunr: ^2.3.9
+    marked: ^4.0.16
+    minimatch: ^5.1.0
+    shiki: ^0.10.1
+  peerDependencies:
+    typescript: 4.6.x || 4.7.x
+  bin:
+    typedoc: bin/typedoc
+  checksum: 2a1fc8ef9ebb7acb66fc2f82b7a0247d3bc74ad60da5397f108ef7183c1c50ec6a994c108d04ac5c7dbd1f2226a326414187e01f8c40559b4b1171ad421e2a10
+  languageName: node
+  linkType: hard
+
 "typescript@npm:4.7.4":
   version: 4.7.4
   resolution: "typescript@npm:4.7.4"
