@@ -21,8 +21,5 @@
     "predocs": "tsc",
     "docs": "typedoc"
   },
-  "packageManager": "yarn@3.2.1",
-  "resolutions": {
-    "typedoc@0.23.1": "patch:typedoc@npm:0.23.1#.yarn/patches/typedoc-npm-0.23.1-f720835957.patch"
-  }
+  "packageManager": "yarn@3.2.1"
 }

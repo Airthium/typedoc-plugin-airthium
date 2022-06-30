@@ -2,8 +2,28 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.buildNav = exports.navStyle = void 0;
 const typedoc_1 = require("typedoc");
-const icon_1 = require("typedoc/dist/lib/output/themes/default/partials/icon");
-const lib_1 = require("typedoc/dist/lib/output/themes/lib");
+const icon_1 = require("./icon");
+const classNames = (names, extraCss) => {
+    const css = Object.keys(names)
+        .filter((key) => names[key])
+        .concat(extraCss || "")
+        .join(" ")
+        .trim()
+        .replace(/\s+/g, " ");
+    return css.length ? css : undefined;
+};
+const wbr = (str) => {
+    const ret = [];
+    const re = /[\s\S]*?(?:[^_-][_-](?=[^_-])|[^A-Z](?=[A-Z][^A-Z]))/g;
+    let match;
+    let i = 0;
+    while ((match = re.exec(str))) {
+        ret.push(match[0], typedoc_1.JSX.createElement("wbr", null));
+        i += match[0].length;
+    }
+    ret.push(str.slice(i));
+    return ret;
+};
 exports.navStyle = `.padding-left-25 {
   padding-left: 25px !important;
 }`;
@@ -63,7 +83,7 @@ const primaryNavigation = (context, props) => {
     const current = selected || modules.some((mod) => inPath(mod, props.model));
     return (typedoc_1.JSX.createElement("nav", { class: "tsd-navigation primary" },
         typedoc_1.JSX.createElement("ul", null,
-            typedoc_1.JSX.createElement("li", { class: (0, lib_1.classNames)({ current, selected }) },
+            typedoc_1.JSX.createElement("li", { class: classNames({ current, selected }) },
                 typedoc_1.JSX.createElement("a", { href: context.urlTo(props.model.project) }, props.project.name),
                 typedoc_1.JSX.createElement("ul", null, tree.children.map((child) => link(child)))))));
     function link(mod) {
@@ -74,7 +94,7 @@ const primaryNavigation = (context, props) => {
         let childNav;
         const childModules = mod.children;
         if (childModules === null || childModules === void 0 ? void 0 : childModules.length)
-            return (typedoc_1.JSX.createElement("li", { class: (0, lib_1.classNames)({ current, selected, deprecated: mod.module.isDeprecated() }, mod.module.cssClasses) },
+            return (typedoc_1.JSX.createElement("li", { class: classNames({ current, selected, deprecated: mod.module.isDeprecated() }, mod.module.cssClasses) },
                 typedoc_1.JSX.createElement("details", { class: "tsd-index-accordion", open: false },
                     typedoc_1.JSX.createElement("summary", { class: "tsd-accordion-summary" },
                         typedoc_1.JSX.createElement("a", { href: context.urlTo(mod.module) },
@@ -83,7 +103,7 @@ const primaryNavigation = (context, props) => {
                             mod.id)),
                     typedoc_1.JSX.createElement("div", { class: "tsd-accordion-details" },
                         typedoc_1.JSX.createElement("ul", null,
-                            typedoc_1.JSX.createElement("li", { class: (0, lib_1.classNames)({
+                            typedoc_1.JSX.createElement("li", { class: classNames({
                                     current,
                                     selected,
                                     deprecated: mod.module.isDeprecated(),
@@ -92,7 +112,7 @@ const primaryNavigation = (context, props) => {
                                 childNav),
                             childModules.map(link))),
                     childNav)));
-        return (typedoc_1.JSX.createElement("li", { class: (0, lib_1.classNames)({ current, selected, deprecated: mod.module.isDeprecated() }, mod.module.cssClasses) },
+        return (typedoc_1.JSX.createElement("li", { class: classNames({ current, selected, deprecated: mod.module.isDeprecated() }, mod.module.cssClasses) },
             typedoc_1.JSX.createElement("a", { class: "padding-left-25", href: context.urlTo(mod.module) }, mod.id),
             childNav));
     }
@@ -113,26 +133,26 @@ const secondaryNavigation = (context, props) => {
     const pageNavigation = children
         .filter((child) => !child.kindOf(typedoc_1.ReflectionKind.SomeModule))
         .map((child) => {
-        return (typedoc_1.JSX.createElement("li", { class: (0, lib_1.classNames)({
+        return (typedoc_1.JSX.createElement("li", { class: classNames({
                 deprecated: child.isDeprecated(),
                 current: props.model === child,
             }, child.cssClasses) },
             typedoc_1.JSX.createElement("a", { href: context.urlTo(child), class: "tsd-index-link" },
                 icon_1.icons[child.kind](),
-                (0, lib_1.wbr)(child.name))));
+                wbr(child.name))));
     });
     if (effectivePageParent.kindOf(typedoc_1.ReflectionKind.SomeModule | typedoc_1.ReflectionKind.Project)) {
         return (typedoc_1.JSX.createElement("nav", { class: "tsd-navigation secondary menu-sticky" }, !!pageNavigation.length && typedoc_1.JSX.createElement("ul", null, pageNavigation)));
     }
     return (typedoc_1.JSX.createElement("nav", { class: "tsd-navigation secondary menu-sticky" },
         typedoc_1.JSX.createElement("ul", null,
-            typedoc_1.JSX.createElement("li", { class: (0, lib_1.classNames)({
+            typedoc_1.JSX.createElement("li", { class: classNames({
                     deprecated: effectivePageParent.isDeprecated(),
                     current: effectivePageParent === props.model,
                 }, effectivePageParent.cssClasses) },
                 typedoc_1.JSX.createElement("a", { href: context.urlTo(effectivePageParent), class: "tsd-index-link" },
                     icon_1.icons[effectivePageParent.kind](),
-                    typedoc_1.JSX.createElement("span", null, (0, lib_1.wbr)(effectivePageParent.name))),
+                    typedoc_1.JSX.createElement("span", null, wbr(effectivePageParent.name))),
                 !!pageNavigation.length && typedoc_1.JSX.createElement("ul", null, pageNavigation)))));
 };
 function inPath(thisPage, toCheck) {
