@@ -68,14 +68,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "typedoc-plugin-airthium@workspace:."
   dependencies:
-    typedoc: 0.23.1
+    typedoc: 0.23.5
     typescript: 4.7.4
   languageName: unknown
   linkType: soft
 
-"typedoc@npm:0.23.1":
-  version: 0.23.1
-  resolution: "typedoc@npm:0.23.1"
+"typedoc@npm:0.23.5":
+  version: 0.23.5
+  resolution: "typedoc@npm:0.23.5"
   dependencies:
     lunr: ^2.3.9
     marked: ^4.0.16
@@ -85,7 +85,7 @@ __metadata:
     typescript: 4.6.x || 4.7.x
   bin:
     typedoc: bin/typedoc
-  checksum: 8622847ffff85b4ca2fa4d95e7507aafe50b155fe37d7f3f9b2721f7a80effecbca4dda682f9f81bdf1ac230cefd6e6127715398146fc00205042f25da19373a
+  checksum: a8c0aed855f588a2c008e5520e59e4a59d48d14cd483d0030fc3345bed3757aac8618659c59b4087c221aa2f7a7875b9f30c7a4a966e43ec969cd8905d6d8b67
   languageName: node
   linkType: hard
 
