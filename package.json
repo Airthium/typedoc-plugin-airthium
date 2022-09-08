@@ -7,7 +7,7 @@
     "name": "Airthium",
     "url": "https://github.com/orgs/Airthium/people"
   },
-  "license": "UNLICENSED",
+  "license": "AGPL-3.0-or-later",
   "keywords": [
     "airthium",
     "typedoc-plugin"
