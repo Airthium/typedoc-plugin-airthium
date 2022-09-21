@@ -1,7 +1,7 @@
 {
   "name": "@airthium/typedoc-plugin-airthium",
   "version": "1.0.6",
-  "homepage": "https://github.com/orgs/Airthium/typedoc-plugin-airthium",
+  "homepage": "https://github.com/Airthium/typedoc-plugin-airthium",
   "repository": {
     "type": "git",
     "url": "git://github.com/Airthium/typedoc-plugin-airthium.git"
