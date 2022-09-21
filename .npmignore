@@ -1,8 +1,12 @@
 .github
+.yarn
 docs
 node_modules
 src
 test
 .gitignore
+.yarnrc.yml
 tsconfig.json
 tsconfig.test.json
+typedoc.json
+yarn.lock

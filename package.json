@@ -13,13 +13,17 @@
     "typedoc-plugin"
   ],
   "devDependencies": {
+    "depcheck": "1.4.3",
+    "prettier": "2.7.1",
     "typedoc": "0.23.15",
     "typescript": "4.8.3"
   },
   "scripts": {
-    "build": "tsc",
+    "depcheck": "depcheck",
+    "prettier": "prettier -l src/*.tsx",
     "predocs": "tsc",
-    "docs": "typedoc"
+    "docs": "typedoc",
+    "build": "tsc"
   },
   "packageManager": "yarn@3.2.3"
 }
