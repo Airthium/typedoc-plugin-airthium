@@ -1,13 +1,17 @@
 {
   "name": "@airthium/typedoc-plugin-airthium",
   "version": "1.0.6",
-  "main": "dist/index.js",
-  "repository": "git@github.com:Airthium/typedoc-plugin-airthium",
+  "homepage": "https://github.com/orgs/Airthium/typedoc-plugin-airthium",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Airthium/typedoc-plugin-airthium.git"
+  },
+  "license": "AGPL-3.0-or-later",
   "author": {
     "name": "Airthium",
     "url": "https://github.com/orgs/Airthium/people"
   },
-  "license": "AGPL-3.0-or-later",
+  "main": "dist/index.js",
   "keywords": [
     "airthium",
     "typedoc-plugin"

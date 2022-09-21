@@ -1,5 +1,4 @@
 .github
-.yarn
 docs
 node_modules
 src
