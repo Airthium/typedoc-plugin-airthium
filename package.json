@@ -24,6 +24,5 @@
     "predocs": "tsc",
     "docs": "typedoc",
     "build": "tsc"
-  },
-  "packageManager": "yarn@3.2.3"
+  }
 }
