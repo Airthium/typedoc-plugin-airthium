@@ -56,7 +56,7 @@ then
     check
 
     # Merge
-    merge
+    merge $1
 
     git checkout dev
 else
