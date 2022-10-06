@@ -38,6 +38,14 @@ const wbr = (str: string): (string | JSX.Element)[] => {
 
 export const navStyle = `.padding-left-25 {
   padding-left: 25px !important;
+}
+.text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.chevron > svg {
+  margin-bottom: -0.25rem;
 }`;
 
 class Tree {
@@ -80,7 +88,7 @@ const settings = () => (
   <div class="tsd-navigation settings">
     <details class="tsd-index-accordion" open={false}>
       <summary class="tsd-accordion-summary">
-        <h3>{icons.chevronDown()} Settings</h3>
+        <h3 class="chevron">{icons.chevronDown()} Settings</h3>
       </summary>
       <div class="tsd-accordion-details">
         <div class="tsd-theme-toggle">
@@ -149,7 +157,7 @@ const primaryNavigation = (
         >
           <details class="tsd-index-accordion" open={false}>
             <summary class="tsd-accordion-summary">
-              <a href={context.urlTo(mod.module)}>
+              <a class="chevron text-ellipsis" href={context.urlTo(mod.module)}>
                 {icons.chevronDown()} {mod.id}
               </a>
             </summary>
@@ -165,7 +173,10 @@ const primaryNavigation = (
                     mod.module.cssClasses
                   )}
                 >
-                  <a class="padding-left-25" href={context.urlTo(mod.module)}>
+                  <a
+                    class="padding-left-25 text-ellipsis"
+                    href={context.urlTo(mod.module)}
+                  >
                     Index
                   </a>
                   {childNav}
@@ -185,7 +196,10 @@ const primaryNavigation = (
           mod.module.cssClasses
         )}
       >
-        <a class="padding-left-25" href={context.urlTo(mod.module)}>
+        <a
+          class="padding-left-25 text-ellipsis"
+          href={context.urlTo(mod.module)}
+        >
           {mod.id}
         </a>
         {childNav}
@@ -242,14 +256,14 @@ const secondaryNavigation = (
     )
   ) {
     return (
-      <nav class="tsd-navigation secondary menu-sticky">
+      <nav class="tsd-navigation secondary">
         {!!pageNavigation.length && <ul>{pageNavigation}</ul>}
       </nav>
     );
   }
 
   return (
-    <nav class="tsd-navigation secondary menu-sticky">
+    <nav class="tsd-navigation secondary">
       <ul>
         <li
           class={classNames(

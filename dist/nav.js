@@ -26,6 +26,14 @@ const wbr = (str) => {
 };
 exports.navStyle = `.padding-left-25 {
   padding-left: 25px !important;
+}
+.text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.chevron > svg {
+  margin-bottom: -0.25rem;
 }`;
 class Tree {
     constructor(id, module) {
@@ -54,7 +62,7 @@ exports.buildNav = buildNav;
 const settings = () => (typedoc_1.JSX.createElement("div", { class: "tsd-navigation settings" },
     typedoc_1.JSX.createElement("details", { class: "tsd-index-accordion", open: false },
         typedoc_1.JSX.createElement("summary", { class: "tsd-accordion-summary" },
-            typedoc_1.JSX.createElement("h3", null,
+            typedoc_1.JSX.createElement("h3", { class: "chevron" },
                 icon_1.icons.chevronDown(),
                 " Settings")),
         typedoc_1.JSX.createElement("div", { class: "tsd-accordion-details" },
@@ -97,7 +105,7 @@ const primaryNavigation = (context, props) => {
             return (typedoc_1.JSX.createElement("li", { class: classNames({ current, selected, deprecated: mod.module.isDeprecated() }, mod.module.cssClasses) },
                 typedoc_1.JSX.createElement("details", { class: "tsd-index-accordion", open: false },
                     typedoc_1.JSX.createElement("summary", { class: "tsd-accordion-summary" },
-                        typedoc_1.JSX.createElement("a", { href: context.urlTo(mod.module) },
+                        typedoc_1.JSX.createElement("a", { class: "chevron text-ellipsis", href: context.urlTo(mod.module) },
                             icon_1.icons.chevronDown(),
                             " ",
                             mod.id)),
@@ -108,12 +116,12 @@ const primaryNavigation = (context, props) => {
                                     selected,
                                     deprecated: mod.module.isDeprecated(),
                                 }, mod.module.cssClasses) },
-                                typedoc_1.JSX.createElement("a", { class: "padding-left-25", href: context.urlTo(mod.module) }, "Index"),
+                                typedoc_1.JSX.createElement("a", { class: "padding-left-25 text-ellipsis", href: context.urlTo(mod.module) }, "Index"),
                                 childNav),
                             childModules.map(link))),
                     childNav)));
         return (typedoc_1.JSX.createElement("li", { class: classNames({ current, selected, deprecated: mod.module.isDeprecated() }, mod.module.cssClasses) },
-            typedoc_1.JSX.createElement("a", { class: "padding-left-25", href: context.urlTo(mod.module) }, mod.id),
+            typedoc_1.JSX.createElement("a", { class: "padding-left-25 text-ellipsis", href: context.urlTo(mod.module) }, mod.id),
             childNav));
     }
 };
@@ -142,9 +150,9 @@ const secondaryNavigation = (context, props) => {
                 wbr(child.name))));
     });
     if (effectivePageParent.kindOf(typedoc_1.ReflectionKind.SomeModule | typedoc_1.ReflectionKind.Project)) {
-        return (typedoc_1.JSX.createElement("nav", { class: "tsd-navigation secondary menu-sticky" }, !!pageNavigation.length && typedoc_1.JSX.createElement("ul", null, pageNavigation)));
+        return (typedoc_1.JSX.createElement("nav", { class: "tsd-navigation secondary" }, !!pageNavigation.length && typedoc_1.JSX.createElement("ul", null, pageNavigation)));
     }
-    return (typedoc_1.JSX.createElement("nav", { class: "tsd-navigation secondary menu-sticky" },
+    return (typedoc_1.JSX.createElement("nav", { class: "tsd-navigation secondary" },
         typedoc_1.JSX.createElement("ul", null,
             typedoc_1.JSX.createElement("li", { class: classNames({
                     deprecated: effectivePageParent.isDeprecated(),

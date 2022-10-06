@@ -1,3 +1,3 @@
-/** @module Main.Sub.SubSub */
+/** @module Main.SubWithALongDescriptionThatCanOverflowInSuchCases.SubSubWithALongDescriptionThatCanOverflowInSuchCases */
 
-const subSub = console.log;
+export const subSub = console.log;

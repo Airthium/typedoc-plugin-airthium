@@ -18,6 +18,18 @@ import { buildNav, navStyle } from "./nav";
  */
 const globalStyle = `#theme{
   padding: 5px;
+}
+#tsd-search .field label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.container.container-main {
+  padding: 0 4rem;
+}
+.container.container-main > div:first-child {
+  flex: 1 0 75%;
+  overflow: auto;
 }`;
 
 /**

@@ -1,3 +1,3 @@
 /** @module Main.Lib */
 
-const lib = console.log;
+export const lib = console.log;
