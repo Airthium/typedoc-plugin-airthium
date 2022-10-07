@@ -19,6 +19,9 @@ import { buildNav, navStyle } from "./nav";
 const globalStyle = `#theme{
   padding: 5px;
 }
+.tsd-panel-group {
+  max-width:99%
+}
 #tsd-search .field label {
   display: flex;
   justify-content: center;
