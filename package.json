@@ -26,7 +26,7 @@
   "scripts": {
     "depcheck": "depcheck",
     "prettier": "prettier -l src/*.tsx",
-    "predocs": "tsc",
+    "predocs": "yarn build",
     "docs": "typedoc",
     "minify": "uglifyjs-folder dist -e -o dist -x .js",
     "build": "tsc --declaration && yarn minify"
