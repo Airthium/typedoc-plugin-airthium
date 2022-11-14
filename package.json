@@ -1,6 +1,6 @@
 {
   "name": "@airthium/typedoc-plugin-airthium",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "homepage": "https://github.com/Airthium/typedoc-plugin-airthium",
   "repository": {
     "type": "git",
@@ -20,13 +20,15 @@
     "depcheck": "1.4.3",
     "prettier": "2.7.1",
     "typedoc": "0.23.21",
-    "typescript": "4.8.4"
+    "typescript": "4.8.4",
+    "uglifyjs-folder": "^3.1.4"
   },
   "scripts": {
     "depcheck": "depcheck",
     "prettier": "prettier -l src/*.tsx",
     "predocs": "tsc",
     "docs": "typedoc",
-    "build": "tsc"
+    "minify": "uglifyjs-folder dist -e -o dist -x .js",
+    "build": "tsc --declaration && yarn minify"
   }
 }
