@@ -1250,10 +1250,10 @@ supports-preserve-symlinks-flag@^1.0.0:
   resolved "https://registry.yarnpkg.com/supports-preserve-symlinks-flag/-/supports-preserve-symlinks-flag-1.0.0.tgz#6eda4bd344a3c94aea376d4cc31bc77311039e09"
   integrity sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==
 
-terser@5.14.2:
-  version "5.14.2"
-  resolved "https://registry.yarnpkg.com/terser/-/terser-5.14.2.tgz#9ac9f22b06994d736174f4091aa368db896f1c10"
-  integrity sha512-oL0rGeM/WFQCUd0y2QrWxYnq7tfSuKBiqTjRPWrRgB46WD/kiwHwF8T23z78H6Q6kGCuuHcPB+KULHRdxvVGQA==
+terser@5.16.1:
+  version "5.16.1"
+  resolved "https://registry.yarnpkg.com/terser/-/terser-5.16.1.tgz#5af3bc3d0f24241c7fb2024199d5c461a1075880"
+  integrity sha512-xvQfyfA1ayT0qdK47zskQgRZeWLoOQ8JQ6mIgRGVNwZKdQMU+5FkCBjmv4QjcrTzyZquRw2FVtlJSRUmMKQslw==
   dependencies:
     "@jridgewell/source-map" "^0.3.2"
     acorn "^8.5.0"
@@ -1307,17 +1307,17 @@ typescript@4.9.4:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.9.4.tgz#a2a3d2756c079abda241d75f149df9d561091e78"
   integrity sha512-Uz+dTXYzxXXbsFpM86Wh3dKCxrQqUcVMxwU54orwlJjOpO3ao8L7j5lH+dWfTwgCwIuM9GQ2kvVotzYJMXTBZg==
 
-uglifyjs-folder@3.1.4:
-  version "3.1.4"
-  resolved "https://registry.yarnpkg.com/uglifyjs-folder/-/uglifyjs-folder-3.1.4.tgz#a3b858a50b59d65992a75ad96e75be5c426cf463"
-  integrity sha512-0CqKbfNFm7Q4nwNnCgG4K/8DkzIG/fDxohAugcpbA4DYMGy2hQaMzJGCU7agaFKrWM9CDBMa+YIE2TkbDTTMJQ==
+uglifyjs-folder@3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/uglifyjs-folder/-/uglifyjs-folder-3.2.0.tgz#d9c69e73166819f66e4e62f363c0758c0afa8796"
+  integrity sha512-FjrSkbzTQi03K2NlaWVL0DGmsL+2rGuneOsMWgqBX+jbnlipBrnI1GV2QtH+TeBT7aV+bumPvqm344TbTn+6Og==
   dependencies:
     extend "3.0.2"
     globby "11.1.0"
     graceful-fs "4.2.10"
     meow "9.0.0"
     mkdirp "1.0.4"
-    terser "5.14.2"
+    terser "5.16.1"
 
 validate-npm-package-license@^3.0.1:
   version "3.0.4"
