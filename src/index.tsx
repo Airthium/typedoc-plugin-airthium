@@ -12,6 +12,7 @@ import {
 
 import { buildBreadcrumbs } from "./breadcrumb";
 import { buildNav, navStyle } from "./nav";
+import { buildFooter } from "./footer";
 
 /**
  * Global style
@@ -50,6 +51,11 @@ export class AirthiumThemeContext extends DefaultThemeRenderContext {
     // Override navigation
     this.navigation = (props: PageEvent<Reflection>) => {
       return buildNav(this, props);
+    };
+
+    // Override footer
+    this.footer = () => {
+      return buildFooter(this);
     };
   }
 }
