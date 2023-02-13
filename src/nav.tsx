@@ -252,7 +252,7 @@ const secondaryNavigation = (
 
   if (
     effectivePageParent.kindOf(
-      ReflectionKind.SomeModule | ReflectionKind.Project
+      ReflectionKind.SomeModule || ReflectionKind.Project
     )
   ) {
     return (
