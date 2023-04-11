@@ -77,32 +77,11 @@ export const buildNav = (
 ) => {
   return (
     <>
-      {settings()}
       {primaryNavigation(context, props)}
       {secondaryNavigation(context, props)}
     </>
   );
 };
-
-const settings = () => (
-  <div class="tsd-navigation settings">
-    <details class="tsd-index-accordion" open={false}>
-      <summary class="tsd-accordion-summary">
-        <h3 class="chevron">{icons.chevronDown()} Settings</h3>
-      </summary>
-      <div class="tsd-accordion-details">
-        <div class="tsd-theme-toggle">
-          <h4 class="uppercase">Theme</h4>
-          <select id="theme">
-            <option value="os">OS</option>
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-          </select>
-        </div>
-      </div>
-    </details>
-  </div>
-);
 
 const primaryNavigation = (
   context: DefaultThemeRenderContext,
@@ -150,10 +129,11 @@ const primaryNavigation = (
     if (childModules?.length)
       return (
         <li
-          class={classNames(
-            { current, selected, deprecated: mod.module.isDeprecated() }
-            // mod.module.cssClasses
-          )}
+          class={classNames({
+            current,
+            selected,
+            deprecated: mod.module.isDeprecated(),
+          })}
         >
           <details class="tsd-index-accordion" open={false}>
             <summary class="tsd-accordion-summary">
@@ -164,14 +144,11 @@ const primaryNavigation = (
             <div class="tsd-accordion-details">
               <ul>
                 <li
-                  class={classNames(
-                    {
-                      current,
-                      selected,
-                      deprecated: mod.module.isDeprecated(),
-                    }
-                    // mod.module.cssClasses
-                  )}
+                  class={classNames({
+                    current,
+                    selected,
+                    deprecated: mod.module.isDeprecated(),
+                  })}
                 >
                   <a
                     class="padding-left-25 text-ellipsis"
@@ -191,10 +168,11 @@ const primaryNavigation = (
 
     return (
       <li
-        class={classNames(
-          { current, selected, deprecated: mod.module.isDeprecated() }
-          // mod.module.cssClasses
-        )}
+        class={classNames({
+          current,
+          selected,
+          deprecated: mod.module.isDeprecated(),
+        })}
       >
         <a
           class="padding-left-25 text-ellipsis"
@@ -234,13 +212,12 @@ const secondaryNavigation = (
     .map((child) => {
       return (
         <li
-          class={classNames(
-            {
-              deprecated: child.isDeprecated(),
-              current: props.model === child,
-            }
-            // child.cssClasses
-          )}
+          // @ts-ignore
+          key={child.id}
+          class={classNames({
+            deprecated: child.isDeprecated(),
+            current: props.model === child,
+          })}
         >
           <a href={context.urlTo(child)} class="tsd-index-link">
             {icons[child.kind]()}
@@ -266,13 +243,10 @@ const secondaryNavigation = (
     <nav class="tsd-navigation secondary">
       <ul>
         <li
-          class={classNames(
-            {
-              deprecated: effectivePageParent.isDeprecated(),
-              current: effectivePageParent === props.model,
-            }
-            // effectivePageParent.cssClasses
-          )}
+          class={classNames({
+            deprecated: effectivePageParent.isDeprecated(),
+            current: effectivePageParent === props.model,
+          })}
         >
           <a href={context.urlTo(effectivePageParent)} class="tsd-index-link">
             {icons[effectivePageParent.kind]()}

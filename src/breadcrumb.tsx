@@ -62,7 +62,10 @@ const buildBreadCrumbsList = (
   const list = paths.map((path: string) => {
     current = current[path] as BreadItem;
     return (
-      <li>
+      <li
+        //@ts-ignore
+        key={current.href}
+      >
         {current.href ? (
           <a href={current.href}>{current.name}</a>
         ) : (
