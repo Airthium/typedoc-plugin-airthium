@@ -7,7 +7,6 @@ import {
   PageEvent,
   Reflection,
   DefaultThemeRenderContext,
-  Options,
 } from "typedoc";
 
 import { buildBreadcrumbs } from "./breadcrumb";
@@ -40,24 +39,20 @@ const globalStyle = `#theme{
  * Airthium theme context
  */
 export class AirthiumThemeContext extends DefaultThemeRenderContext {
-  constructor(theme: DefaultTheme, options: Options) {
-    super(theme, options);
+  // Override breadcrumbs
+  override breadcrumb = (props: Reflection) => {
+    return buildBreadcrumbs(props, { urlTo: this.urlTo });
+  };
 
-    // Override breadcrumbs
-    this.breadcrumb = (props: Reflection) => {
-      return buildBreadcrumbs(props, { urlTo: this.urlTo });
-    };
+  // Override navigation
+  override navigation = (props: PageEvent<Reflection>): JSX.Element => {
+    return buildNav(this, props);
+  };
 
-    // Override navigation
-    this.navigation = (props: PageEvent<Reflection>) => {
-      return buildNav(this, props);
-    };
-
-    // Override footer
-    this.footer = () => {
-      return buildFooter(this);
-    };
-  }
+  // Override footer
+  override footer = (): JSX.Element | undefined => {
+    return buildFooter(this);
+  };
 }
 
 /**
@@ -65,9 +60,12 @@ export class AirthiumThemeContext extends DefaultThemeRenderContext {
  */
 export class AirthiumTheme extends DefaultTheme {
   private _contextCache?: AirthiumThemeContext;
-  override getRenderContext(): AirthiumThemeContext {
+  override getRenderContext(
+    pageEvent: PageEvent<Reflection>
+  ): AirthiumThemeContext {
     this._contextCache ||= new AirthiumThemeContext(
       this,
+      pageEvent,
       this.application.options
     );
     return this._contextCache;

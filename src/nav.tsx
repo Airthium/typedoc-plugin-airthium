@@ -151,8 +151,8 @@ const primaryNavigation = (
       return (
         <li
           class={classNames(
-            { current, selected, deprecated: mod.module.isDeprecated() },
-            mod.module.cssClasses
+            { current, selected, deprecated: mod.module.isDeprecated() }
+            // mod.module.cssClasses
           )}
         >
           <details class="tsd-index-accordion" open={false}>
@@ -169,8 +169,8 @@ const primaryNavigation = (
                       current,
                       selected,
                       deprecated: mod.module.isDeprecated(),
-                    },
-                    mod.module.cssClasses
+                    }
+                    // mod.module.cssClasses
                   )}
                 >
                   <a
@@ -192,8 +192,8 @@ const primaryNavigation = (
     return (
       <li
         class={classNames(
-          { current, selected, deprecated: mod.module.isDeprecated() },
-          mod.module.cssClasses
+          { current, selected, deprecated: mod.module.isDeprecated() }
+          // mod.module.cssClasses
         )}
       >
         <a
@@ -238,8 +238,8 @@ const secondaryNavigation = (
             {
               deprecated: child.isDeprecated(),
               current: props.model === child,
-            },
-            child.cssClasses
+            }
+            // child.cssClasses
           )}
         >
           <a href={context.urlTo(child)} class="tsd-index-link">
@@ -270,8 +270,8 @@ const secondaryNavigation = (
             {
               deprecated: effectivePageParent.isDeprecated(),
               current: effectivePageParent === props.model,
-            },
-            effectivePageParent.cssClasses
+            }
+            // effectivePageParent.cssClasses
           )}
         >
           <a href={context.urlTo(effectivePageParent)} class="tsd-index-link">
