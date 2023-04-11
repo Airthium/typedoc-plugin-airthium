@@ -9,9 +9,9 @@ import {
   DefaultThemeRenderContext,
 } from "typedoc";
 
-import { buildBreadcrumbs } from "./breadcrumb";
-import { buildNav, navStyle } from "./nav";
-import { buildFooter } from "./footer";
+import { breadcrumbs } from "./breadcrumb";
+import { navigation } from "./nav";
+import { footer } from "./footer";
 
 /**
  * Global style
@@ -19,21 +19,14 @@ import { buildFooter } from "./footer";
 const globalStyle = `#theme{
   padding: 5px;
 }
-.tsd-panel-group {
-  max-width:99%
-}
-#tsd-search .field label {
+.tsd-accordion-summary h3 {
   display: flex;
-  justify-content: center;
   align-items: center;
 }
-.container.container-main {
-  padding: 0 4rem;
+.col-content h1 {
+  line-break: anywhere
 }
-.container.container-main > div:first-child {
-  flex: 1 0 75%;
-  overflow: auto;
-}`;
+`;
 
 /**
  * Airthium theme context
@@ -41,17 +34,17 @@ const globalStyle = `#theme{
 export class AirthiumThemeContext extends DefaultThemeRenderContext {
   // Override breadcrumbs
   override breadcrumb = (props: Reflection) => {
-    return buildBreadcrumbs(props, { urlTo: this.urlTo });
+    return breadcrumbs(props, { urlTo: this.urlTo });
   };
 
-  // Override navigation
+  // // Override navigation
   override navigation = (props: PageEvent<Reflection>): JSX.Element => {
-    return buildNav(this, props);
+    return navigation(this, props);
   };
 
   // Override footer
   override footer = (): JSX.Element | undefined => {
-    return buildFooter(this);
+    return footer(this);
   };
 }
 
@@ -86,7 +79,7 @@ export function load(app: Application) {
   ));
 
   // CSS
-  const style = globalStyle + navStyle;
+  const style = globalStyle;
   app.renderer.hooks.on("body.begin", () => (
     <style>
       <JSX.Raw html={style} />

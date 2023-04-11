@@ -1,6 +1,6 @@
 import { DefaultThemeRenderContext, JSX } from "typedoc";
 
-export const buildFooter = (context: DefaultThemeRenderContext) => {
+export const footer = (context: DefaultThemeRenderContext) => {
   const hideGenerator = context.options.getValue("hideGenerator");
   if (!hideGenerator)
     return (

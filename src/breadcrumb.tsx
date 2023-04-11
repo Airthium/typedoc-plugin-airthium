@@ -84,7 +84,7 @@ const buildBreadCrumbsList = (
  * @param func { urlTo }
  * @returns Breadcrumbs
  */
-export const buildBreadcrumbs = (
+export const breadcrumbs = (
   props: Reflection,
   { urlTo }: { urlTo: (module: DeclarationReflection) => string | undefined }
 ): JSX.Element | undefined => {

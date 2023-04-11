@@ -1,57 +1,19 @@
 import {
-  ContainerReflection,
   DeclarationReflection,
   DefaultThemeRenderContext,
   JSX,
   PageEvent,
+  ProjectReflection,
   Reflection,
   ReflectionKind,
 } from "typedoc";
-import { icons } from "./icon";
 
-const classNames = (
-  names: Record<string, boolean | null | undefined>,
-  extraCss?: string
-) => {
-  const css = Object.keys(names)
-    .filter((key) => names[key])
-    .concat(extraCss || "")
-    .join(" ")
-    .trim()
-    .replace(/\s+/g, " ");
-  return css.length ? css : undefined;
-};
-
-const wbr = (str: string): (string | JSX.Element)[] => {
-  const ret: (string | JSX.Element)[] = [];
-  const re = /[\s\S]*?(?:[^_-][_-](?=[^_-])|[^A-Z](?=[A-Z][^A-Z]))/g;
-  let match: RegExpExecArray | null;
-  let i = 0;
-  while ((match = re.exec(str))) {
-    ret.push(match[0], <wbr />);
-    i += match[0].length;
-  }
-  ret.push(str.slice(i));
-
-  return ret;
-};
-
-export const navStyle = `.padding-left-25 {
-  padding-left: 25px !important;
-}
-.text-ellipsis {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.chevron > svg {
-  margin-bottom: -0.25rem;
-}`;
+import { classNames, getDisplayName, wbr } from "./lib";
 
 class Tree {
   id: string;
   module?: DeclarationReflection;
-  children: any[];
+  children: Tree[];
 
   constructor(id: string, module?: DeclarationReflection) {
     this.id = id;
@@ -71,27 +33,17 @@ class Tree {
   };
 }
 
-export const buildNav = (
+export function navigation(
   context: DefaultThemeRenderContext,
   props: PageEvent<Reflection>
-) => {
-  return (
-    <>
-      {primaryNavigation(context, props)}
-      {secondaryNavigation(context, props)}
-    </>
-  );
-};
-
-const primaryNavigation = (
-  context: DefaultThemeRenderContext,
-  props: PageEvent<Reflection>
-) => {
+) {
   // Create the navigation for the current page
+  // Recurse to children if the parent is some kind of module
 
   const modules = props.model.project.getChildrenByKind(
     ReflectionKind.SomeModule
   );
+
   const tree = new Tree("root");
   modules.forEach((module) => {
     const names = module.name.split(".");
@@ -105,170 +57,72 @@ const primaryNavigation = (
     }, tree);
   });
 
-  const selected = props.model.isProject();
-  const current = selected || modules.some((mod) => inPath(mod, props.model));
-
   return (
-    <nav class="tsd-navigation primary">
-      <ul>
-        <li class={classNames({ current, selected })}>
-          <a href={context.urlTo(props.model.project)}>{props.project.name}</a>
-          <ul>{tree.children.map((child) => link(child))}</ul>
-        </li>
+    <nav class="tsd-navigation">
+      {link(props.project)}
+      <ul class="tsd-small-nested-navigation">
+        {tree.children?.map((child) => (
+          <li>{links(child)}</li>
+        ))}
       </ul>
     </nav>
   );
 
-  function link(mod: Tree) {
-    if (!mod.module) return;
+  function links(child: Tree) {
+    const mod = child.module!;
+    const children = child.children;
 
-    const current = inPath(mod.module, props.model);
-    const selected = mod.module.name === props.model.name;
-    let childNav: JSX.Element | undefined;
-    const childModules = mod.children;
-    if (childModules?.length)
-      return (
-        <li
-          class={classNames({
-            current,
-            selected,
-            deprecated: mod.module.isDeprecated(),
-          })}
-        >
-          <details class="tsd-index-accordion" open={false}>
-            <summary class="tsd-accordion-summary">
-              <a class="chevron text-ellipsis" href={context.urlTo(mod.module)}>
-                {icons.chevronDown()} {mod.id}
-              </a>
-            </summary>
-            <div class="tsd-accordion-details">
-              <ul>
-                <li
-                  class={classNames({
-                    current,
-                    selected,
-                    deprecated: mod.module.isDeprecated(),
-                  })}
-                >
-                  <a
-                    class="padding-left-25 text-ellipsis"
-                    href={context.urlTo(mod.module)}
-                  >
-                    Index
-                  </a>
-                  {childNav}
-                </li>
-                {childModules.map(link)}
-              </ul>
-            </div>
-            {childNav}
-          </details>
-        </li>
-      );
+    const nameClasses = classNames(
+      { deprecated: mod.isDeprecated() },
+      mod.isProject() ? void 0 : context.getReflectionClasses(mod)
+    );
+
+    if (!children.length) {
+      return link(mod, nameClasses);
+    }
 
     return (
-      <li
-        class={classNames({
-          current,
-          selected,
-          deprecated: mod.module.isDeprecated(),
-        })}
+      <details
+        class={classNames({ "tsd-index-accordion": true }, nameClasses)}
+        open={inPath(mod)}
+        data-key={mod.getFullName()}
       >
-        <a
-          class="padding-left-25 text-ellipsis"
-          href={context.urlTo(mod.module)}
-        >
-          {mod.id}
-        </a>
-        {childNav}
-      </li>
+        <summary class="tsd-accordion-summary">
+          {context.icons.chevronDown()}
+          {link(mod)}
+        </summary>
+        <div class="tsd-accordion-details">
+          <ul class="tsd-nested-navigation">
+            {children.map((c) => (
+              <li>{links(c)}</li>
+            ))}
+          </ul>
+        </div>
+      </details>
     );
   }
-};
 
-const secondaryNavigation = (
-  context: DefaultThemeRenderContext,
-  props: PageEvent<Reflection>
-) => {
-  // Multiple entry points, and on main project page.
-  if (
-    props.model.isProject() &&
-    props.model.getChildrenByKind(ReflectionKind.Module).length
-  ) {
-    return;
-  }
-
-  const effectivePageParent =
-    (props.model instanceof ContainerReflection &&
-      props.model.children?.length) ||
-    props.model.isProject()
-      ? props.model
-      : props.model.parent!;
-
-  const children = (effectivePageParent as ContainerReflection).children || [];
-
-  const pageNavigation = children
-    .filter((child) => !child.kindOf(ReflectionKind.SomeModule))
-    .map((child) => {
-      return (
-        <li
-          // @ts-ignore
-          key={child.id}
-          class={classNames({
-            deprecated: child.isDeprecated(),
-            current: props.model === child,
-          })}
-        >
-          <a href={context.urlTo(child)} class="tsd-index-link">
-            {icons[child.kind]()}
-            {wbr(child.name)}
-          </a>
-        </li>
-      );
-    });
-
-  if (
-    effectivePageParent.kindOf(
-      ReflectionKind.SomeModule || ReflectionKind.Project
-    )
+  function link(
+    child: DeclarationReflection | ProjectReflection,
+    nameClasses?: string
   ) {
     return (
-      <nav class="tsd-navigation secondary">
-        {!!pageNavigation.length && <ul>{pageNavigation}</ul>}
-      </nav>
+      <a
+        href={context.urlTo(child)}
+        class={classNames({ current: child === props.model }, nameClasses)}
+      >
+        {context.icons[child.kind]()}
+        <span>{wbr(getDisplayName(child))}</span>
+      </a>
     );
   }
 
-  return (
-    <nav class="tsd-navigation secondary">
-      <ul>
-        <li
-          class={classNames({
-            deprecated: effectivePageParent.isDeprecated(),
-            current: effectivePageParent === props.model,
-          })}
-        >
-          <a href={context.urlTo(effectivePageParent)} class="tsd-index-link">
-            {icons[effectivePageParent.kind]()}
-            <span>{wbr(effectivePageParent.name)}</span>
-          </a>
-          {!!pageNavigation.length && <ul>{pageNavigation}</ul>}
-        </li>
-      </ul>
-    </nav>
-  );
-};
-
-function inPath(
-  thisPage: Reflection,
-  toCheck: Reflection | undefined
-): boolean {
-  while (toCheck) {
-    if (toCheck.isProject()) return false;
-
-    if (thisPage === toCheck) return true;
-
-    toCheck = toCheck.parent;
+  function inPath(mod: DeclarationReflection | ProjectReflection) {
+    let iter: Reflection | undefined = props.model;
+    do {
+      if (iter == mod) return true;
+      iter = iter.parent;
+    } while (iter);
+    return false;
   }
-  return false;
 }
