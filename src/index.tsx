@@ -69,7 +69,7 @@ export class AirthiumTheme extends DefaultTheme {
  * Load
  * @param app Application
  */
-export function load(app: Application) {
+export const load = (app: Application): void => {
   // Favicon
   app.renderer.hooks.on("head.end", () => (
     <link
@@ -87,4 +87,4 @@ export function load(app: Application) {
   ));
 
   app.renderer.defineTheme("airthium", AirthiumTheme);
-}
+};

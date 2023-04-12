@@ -5,6 +5,9 @@ import {
   ReflectionKind,
 } from "typedoc";
 
+/**
+ * Bread item
+ */
 export interface BreadItem {
   name?: string;
   completeName?: string;
@@ -19,7 +22,7 @@ export interface BreadItem {
  * @param value Value
  * @returns Path
  */
-const findPath = (ob: BreadItem, key: string, value: string) => {
+const findPath = (ob: BreadItem, key: string, value: string): string[] => {
   const path: string[] = [];
 
   const keyExists = (obj: BreadItem): boolean => {
