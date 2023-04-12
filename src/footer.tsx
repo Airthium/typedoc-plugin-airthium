@@ -1,7 +1,7 @@
 import { DefaultThemeRenderContext, JSX } from "typedoc";
 
 export const footer = (context: DefaultThemeRenderContext) => {
-  const hideGenerator = context.options.getValue("hideGenerator");
+  const hideGenerator = context.options.getValue?.("hideGenerator");
   if (!hideGenerator)
     return (
       <div class="container tsd-generator">
