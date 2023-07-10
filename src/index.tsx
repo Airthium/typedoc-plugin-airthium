@@ -54,12 +54,12 @@ export class AirthiumThemeContext extends DefaultThemeRenderContext {
 export class AirthiumTheme extends DefaultTheme {
   private _contextCache?: AirthiumThemeContext;
   override getRenderContext(
-    pageEvent: PageEvent<Reflection>
+    pageEvent: PageEvent<Reflection>,
   ): AirthiumThemeContext {
     this._contextCache ||= new AirthiumThemeContext(
       this,
       pageEvent,
-      this.application.options
+      this.application.options,
     );
     return this._contextCache;
   }

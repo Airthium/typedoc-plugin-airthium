@@ -50,7 +50,7 @@ export const wbr = (str: string): (string | JSX.Element)[] => {
  */
 export const classNames = (
   names: Record<string, boolean | null | undefined>,
-  extraCss?: string
+  extraCss?: string,
 ): string | undefined => {
   const css = Object.keys(names)
     .filter((key) => names[key])

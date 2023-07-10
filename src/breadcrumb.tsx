@@ -52,7 +52,7 @@ const findPath = (ob: BreadItem, key: string, value: string): string[] => {
  */
 const buildBreadCrumbsList = (
   breads: BreadItem,
-  name: string
+  name: string,
 ): JSX.Element | undefined => {
   if (!breads) return;
   if (!name) return;
@@ -89,7 +89,7 @@ const buildBreadCrumbsList = (
  */
 export const breadcrumbs = (
   props: Reflection,
-  { urlTo }: { urlTo: (module: DeclarationReflection) => string | undefined }
+  { urlTo }: { urlTo: (module: DeclarationReflection) => string | undefined },
 ): JSX.Element | undefined => {
   const breads: BreadItem = {};
 

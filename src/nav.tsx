@@ -46,14 +46,14 @@ class Tree {
 const links = (
   child: Tree,
   context: DefaultThemeRenderContext,
-  props: PageEvent<Reflection>
+  props: PageEvent<Reflection>,
 ): JSX.Element => {
   const mod = child.module!;
   const children = child.children;
 
   const nameClasses = classNames(
     { deprecated: mod.isDeprecated() },
-    mod.isProject() ? void 0 : context.getReflectionClasses(mod)
+    mod.isProject() ? void 0 : context.getReflectionClasses(mod),
   );
 
   if (!children.length) {
@@ -98,7 +98,7 @@ const link = (
   child: DeclarationReflection | ProjectReflection,
   context: DefaultThemeRenderContext,
   props: PageEvent<Reflection>,
-  nameClasses?: string
+  nameClasses?: string,
 ) => {
   return (
     <a
@@ -119,7 +119,7 @@ const link = (
  */
 const inPath = (
   mod: DeclarationReflection | ProjectReflection,
-  props: PageEvent<Reflection>
+  props: PageEvent<Reflection>,
 ) => {
   let iter: Reflection | undefined = props.model;
   do {
@@ -137,13 +137,13 @@ const inPath = (
  */
 export const navigation = (
   context: DefaultThemeRenderContext,
-  props: PageEvent<Reflection>
+  props: PageEvent<Reflection>,
 ): JSX.Element => {
   // Create the navigation for the current page
   // Recurse to children if the parent is some kind of module
 
   const modules = props.model.project.getChildrenByKind(
-    ReflectionKind.SomeModule
+    ReflectionKind.SomeModule,
   );
 
   const tree = new Tree("root");
