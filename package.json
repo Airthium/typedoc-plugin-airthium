@@ -18,7 +18,7 @@
   ],
   "devDependencies": {
     "depcheck": "1.4.3",
-    "prettier": "2.8.8",
+    "prettier": "3.0.0",
     "typedoc": "0.24.8",
     "typescript": "5.1.6",
     "uglifyjs-folder": "3.3.0"
