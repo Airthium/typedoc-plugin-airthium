@@ -17,10 +17,10 @@
     "typedoc-plugin"
   ],
   "devDependencies": {
-    "depcheck": "1.4.3",
+    "depcheck": "1.4.5",
     "prettier": "3.0.2",
-    "typedoc": "0.24.8",
-    "typescript": "5.1.6",
+    "typedoc": "0.25.0",
+    "typescript": "5.2.2",
     "uglifyjs-folder": "3.3.0"
   },
   "scripts": {
