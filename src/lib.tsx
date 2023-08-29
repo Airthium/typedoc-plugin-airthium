@@ -3,7 +3,7 @@ import {
   JSX,
   ProjectReflection,
   Reflection,
-} from "typedoc";
+} from 'typedoc'
 
 /**
  * Get display name
@@ -11,17 +11,17 @@ import {
  * @returns Display name
  */
 export const getDisplayName = (refl: Reflection): string => {
-  let version = "";
+  let version = ''
   if (
     (refl instanceof DeclarationReflection ||
       refl instanceof ProjectReflection) &&
     refl.packageVersion
   ) {
-    version = ` - v${refl.packageVersion}`;
+    version = ` - v${refl.packageVersion}`
   }
 
-  return `${refl.name.split(".").pop()}${version}`;
-};
+  return `${refl.name.split('.').pop()}${version}`
+}
 
 /**
  * Wbr
@@ -29,18 +29,18 @@ export const getDisplayName = (refl: Reflection): string => {
  * @returns Wbr
  */
 export const wbr = (str: string): (string | JSX.Element)[] => {
-  const ret: (string | JSX.Element)[] = [];
-  const re = /[\s\S]*?(?:[^_-][_-](?=[^_-])|[^A-Z](?=[A-Z][^A-Z]))/g;
-  let match: RegExpExecArray | null;
-  let i = 0;
+  const ret: (string | JSX.Element)[] = []
+  const re = /[\s\S]*?(?:[^_-][_-](?=[^_-])|[^A-Z](?=[A-Z][^A-Z]))/g
+  let match: RegExpExecArray | null
+  let i = 0
   while ((match = re.exec(str))) {
-    ret.push(match[0], <wbr />);
-    i += match[0].length;
+    ret.push(match[0], <wbr />)
+    i += match[0].length
   }
-  ret.push(str.slice(i));
+  ret.push(str.slice(i))
 
-  return ret;
-};
+  return ret
+}
 
 /**
  * Class names
@@ -50,13 +50,13 @@ export const wbr = (str: string): (string | JSX.Element)[] => {
  */
 export const classNames = (
   names: Record<string, boolean | null | undefined>,
-  extraCss?: string,
+  extraCss?: string
 ): string | undefined => {
   const css = Object.keys(names)
     .filter((key) => names[key])
-    .concat(extraCss || "")
-    .join(" ")
+    .concat(extraCss ?? '')
+    .join(' ')
     .trim()
-    .replace(/\s+/g, " ");
-  return css.length ? css : undefined;
-};
+    .replace(/\s+/g, ' ')
+  return css.length ? css : undefined
+}
