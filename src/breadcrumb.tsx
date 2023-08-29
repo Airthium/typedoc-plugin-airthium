@@ -1,18 +1,13 @@
-import {
-  DeclarationReflection,
-  JSX,
-  Reflection,
-  ReflectionKind,
-} from "typedoc";
+import { DeclarationReflection, JSX, Reflection, ReflectionKind } from 'typedoc'
 
 /**
  * Bread item
  */
 export interface BreadItem {
-  name?: string;
-  completeName?: string;
-  href?: string;
-  [key: string]: string | BreadItem | undefined;
+  name?: string
+  completeName?: string
+  href?: string
+  [key: string]: string | BreadItem | undefined
 }
 
 /**
@@ -23,26 +18,26 @@ export interface BreadItem {
  * @returns Path
  */
 const findPath = (ob: BreadItem, key: string, value: string): string[] => {
-  const path: string[] = [];
+  const path: string[] = []
 
   const keyExists = (obj: BreadItem): boolean => {
-    if (!obj || typeof obj !== "object") return false;
-    else if (obj[key] === value) return true;
+    if (!obj || typeof obj !== 'object') return false
+    else if (obj[key] === value) return true
     else {
       for (const k in obj) {
-        path.push(k);
-        const result = keyExists(obj[k] as BreadItem);
-        if (result) return result;
-        path.pop();
+        path.push(k)
+        const result = keyExists(obj[k] as BreadItem)
+        if (result) return result
+        path.pop()
       }
     }
-    return false;
-  };
+    return false
+  }
 
-  keyExists(ob);
+  keyExists(ob)
 
-  return path;
-};
+  return path
+}
 
 /**
  * Build breadcrumbs list
@@ -52,18 +47,18 @@ const findPath = (ob: BreadItem, key: string, value: string): string[] => {
  */
 const buildBreadCrumbsList = (
   breads: BreadItem,
-  name: string,
+  name: string
 ): JSX.Element | undefined => {
-  if (!breads) return;
-  if (!name) return;
+  if (!breads) return
+  if (!name) return
 
-  const paths = findPath(breads, "completeName", name);
+  const paths = findPath(breads, 'completeName', name)
 
-  if (!paths.length) return;
+  if (!paths.length) return
 
-  let current = breads;
+  let current = breads
   const list = paths.map((path: string) => {
-    current = current[path] as BreadItem;
+    current = current[path] as BreadItem
     return (
       <li
         //@ts-ignore
@@ -75,11 +70,11 @@ const buildBreadCrumbsList = (
           current.name
         )}
       </li>
-    );
-  });
+    )
+  })
 
-  return <ul class="tsd-breadcrumb">{list}</ul>;
-};
+  return <ul class="tsd-breadcrumb">{list}</ul>
+}
 
 /**
  * Build breadcrumbs
@@ -89,34 +84,34 @@ const buildBreadCrumbsList = (
  */
 export const breadcrumbs = (
   props: Reflection,
-  { urlTo }: { urlTo: (module: DeclarationReflection) => string | undefined },
+  { urlTo }: { urlTo: (module: DeclarationReflection) => string | undefined }
 ): JSX.Element | undefined => {
-  const breads: BreadItem = {};
+  const breads: BreadItem = {}
 
   // Get current name
-  const currentName = props.name;
+  const currentName = props.name
 
   // Get modules
-  const modules = props.project.getChildrenByKind(ReflectionKind.SomeModule);
+  const modules = props.project.getChildrenByKind(ReflectionKind.SomeModule)
 
   // Get modules informations
   modules.forEach((module) => {
-    const name = module.name;
-    const href = urlTo(module);
+    const name = module.name
+    const href = urlTo(module)
 
-    const path = name.split(".");
+    const path = name.split('.')
 
-    let init = breads;
+    let init = breads
     path.forEach((p, index) => {
-      if (!init[p]) init[p] = { name: p };
+      if (!init[p]) init[p] = { name: p }
 
       if (index === path.length - 1)
-        init[p] = { completeName: name, name: p, href };
+        init[p] = { completeName: name, name: p, href }
 
-      init = init[p] as BreadItem;
-    });
-  });
+      init = init[p] as BreadItem
+    })
+  })
 
   // Return
-  return buildBreadCrumbsList(breads, currentName);
-};
+  return buildBreadCrumbsList(breads, currentName)
+}

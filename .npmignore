@@ -4,6 +4,8 @@ node_modules
 src
 test
 .gitignore
+.prettierignore
+.prettierrc
 .yarnrc.yml
 tsconfig.json
 tsconfig.test.json

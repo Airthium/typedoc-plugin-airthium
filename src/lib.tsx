@@ -2,7 +2,7 @@ import {
   DeclarationReflection,
   JSX,
   ProjectReflection,
-  Reflection,
+  Reflection
 } from 'typedoc'
 
 /**

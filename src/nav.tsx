@@ -5,35 +5,35 @@ import {
   PageEvent,
   ProjectReflection,
   Reflection,
-  ReflectionKind,
-} from "typedoc";
+  ReflectionKind
+} from 'typedoc'
 
-import { classNames, getDisplayName, wbr } from "./lib";
+import { classNames, getDisplayName, wbr } from './lib'
 
 /**
  * Tree
  */
 class Tree {
-  id: string;
-  module?: DeclarationReflection;
-  children: Tree[];
+  id: string
+  module?: DeclarationReflection
+  children: Tree[]
 
   constructor(id: string, module?: DeclarationReflection) {
-    this.id = id;
-    this.module = module;
-    this.children = [];
+    this.id = id
+    this.module = module
+    this.children = []
   }
 
   getChild = (id: string): Tree | undefined => {
-    let node;
+    let node
     this.children.some((n) => {
       if (n.id === id) {
-        node = n;
-        return true;
+        node = n
+        return true
       }
-    });
-    return node;
-  };
+    })
+    return node
+  }
 }
 
 /**
@@ -46,23 +46,23 @@ class Tree {
 const links = (
   child: Tree,
   context: DefaultThemeRenderContext,
-  props: PageEvent<Reflection>,
+  props: PageEvent<Reflection>
 ): JSX.Element => {
-  const mod = child.module!;
-  const children = child.children;
+  const mod = child.module!
+  const children = child.children
 
   const nameClasses = classNames(
     { deprecated: mod.isDeprecated() },
-    mod.isProject() ? void 0 : context.getReflectionClasses(mod),
-  );
+    mod.isProject() ? void 0 : context.getReflectionClasses(mod)
+  )
 
   if (!children.length) {
-    return link(mod, context, props, nameClasses);
+    return link(mod, context, props, nameClasses)
   }
 
   return (
     <details
-      class={classNames({ "tsd-index-accordion": true }, nameClasses)}
+      class={classNames({ 'tsd-index-accordion': true }, nameClasses)}
       open={inPath(mod, props)}
       data-key={mod.getFullName()}
     >
@@ -83,8 +83,8 @@ const links = (
         </ul>
       </div>
     </details>
-  );
-};
+  )
+}
 
 /**
  * Link
@@ -98,7 +98,7 @@ const link = (
   child: DeclarationReflection | ProjectReflection,
   context: DefaultThemeRenderContext,
   props: PageEvent<Reflection>,
-  nameClasses?: string,
+  nameClasses?: string
 ) => {
   return (
     <a
@@ -108,8 +108,8 @@ const link = (
       {context.icons[child.kind]()}
       <span>{wbr(getDisplayName(child))}</span>
     </a>
-  );
-};
+  )
+}
 
 /**
  * In Path
@@ -119,15 +119,15 @@ const link = (
  */
 const inPath = (
   mod: DeclarationReflection | ProjectReflection,
-  props: PageEvent<Reflection>,
+  props: PageEvent<Reflection>
 ) => {
-  let iter: Reflection | undefined = props.model;
+  let iter: Reflection | undefined = props.model
   do {
-    if (iter == mod) return true;
-    iter = iter.parent;
-  } while (iter);
-  return false;
-};
+    if (iter == mod) return true
+    iter = iter.parent
+  } while (iter)
+  return false
+}
 
 /**
  * Navigation
@@ -137,27 +137,27 @@ const inPath = (
  */
 export const navigation = (
   context: DefaultThemeRenderContext,
-  props: PageEvent<Reflection>,
+  props: PageEvent<Reflection>
 ): JSX.Element => {
   // Create the navigation for the current page
   // Recurse to children if the parent is some kind of module
 
   const modules = props.model.project.getChildrenByKind(
-    ReflectionKind.SomeModule,
-  );
+    ReflectionKind.SomeModule
+  )
 
-  const tree = new Tree("root");
+  const tree = new Tree('root')
   modules.forEach((module) => {
-    const names = module.name.split(".");
+    const names = module.name.split('.')
     names.reduce((prev: Tree, name: string) => {
-      let node = prev.getChild(name);
+      let node = prev.getChild(name)
       if (!node) {
-        node = new Tree(name, module);
-        prev.children.push(node);
+        node = new Tree(name, module)
+        prev.children.push(node)
       }
-      return node;
-    }, tree);
-  });
+      return node
+    }, tree)
+  })
 
   return (
     <nav class="tsd-navigation">
@@ -173,5 +173,5 @@ export const navigation = (
         ))}
       </ul>
     </nav>
-  );
-};
+  )
+}
