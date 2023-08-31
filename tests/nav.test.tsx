@@ -16,24 +16,24 @@ describe('src/nav', () => {
       getReflectionClasses: () => 'extra',
       icons: { kind: () => {}, chevronDown: () => {}, undefined: () => {} }
     }
+
+    const module = {
+      name: 'moduleName',
+      isDeprecated: () => false,
+      isProject: () => true,
+      getFullName: () => 'moduleName'
+    }
+    const subModule = {
+      name: 'moduleName.subModuleName',
+      isDeprecated: () => false,
+      isProject: () => false,
+      getFullName: () => 'subModuleName'
+    }
     props = {
       project: { kind: 'kind' },
       model: {
         project: {
-          getChildrenByKind: () => [
-            {
-              name: 'moduleName',
-              isDeprecated: () => false,
-              isProject: () => true,
-              getFullName: () => 'moduleName'
-            },
-            {
-              name: 'moduleName.subModuleName',
-              isDeprecated: () => false,
-              isProject: () => false,
-              getFullName: () => 'subModuleName'
-            }
-          ]
+          getChildrenByKind: () => [module, subModule]
         }
       }
     }
