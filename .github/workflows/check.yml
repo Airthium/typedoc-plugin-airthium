@@ -18,6 +18,8 @@ jobs:
         run: yarn depcheck
       - name: Lint
         run: yarn prettier
+      - name: Tests
+        run: yarn test
       - name: Test
         run: |
           yarn predocs

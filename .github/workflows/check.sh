@@ -11,6 +11,9 @@ yarn depcheck
 # Lint
 yarn prettier
 
+# Tests
+yarn test
+
 # Test
 yarn predocs
 yarn docs
