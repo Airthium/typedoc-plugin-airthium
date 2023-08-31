@@ -1,6 +1,7 @@
 {
   "tsconfig": "tsconfig.test.json",
   "entryPoints": "test",
+  "jsx": "react",
   "entryPointStrategy": "expand",
   "plugin": "./dist/index.js",
   "theme": "airthium",

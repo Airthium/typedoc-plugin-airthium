@@ -49,7 +49,6 @@ const buildBreadCrumbsList = (
   breads: BreadItem,
   name: string
 ): JSX.Element | undefined => {
-  if (!breads) return
   if (!name) return
 
   const paths = findPath(breads, 'completeName', name)

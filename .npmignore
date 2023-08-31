@@ -1,12 +1,17 @@
 .github
+coverage
 docs
 node_modules
 src
 test
+tests
 .gitignore
 .prettierignore
 .prettierrc
+.swcrc
+jest.config.js
 .yarnrc.yml
+sonar-project.properties
 tsconfig.json
 tsconfig.test.json
 typedoc.json
