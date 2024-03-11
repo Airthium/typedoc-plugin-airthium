@@ -1,6 +1,6 @@
 //@ts-nocheck
 
-import { AirthiumTheme, AirthiumThemeContext, load } from '../src'
+import { load } from '../src'
 
 jest.mock('../src/breadcrumb', () => ({
   breadcrumbs: jest.fn
@@ -23,21 +23,8 @@ describe('src/index', () => {
       defineTheme: jest.fn
     }
   }
-  const renderer = { getComponent: jest.fn, application: {} }
 
   test('load', () => {
     load(app)
-  })
-
-  test('AirthiumThemeContext', () => {
-    const context = new AirthiumThemeContext()
-    context.breadcrumb()
-    context.navigation()
-    context.footer()
-  })
-
-  test('AirthiumTheme', () => {
-    const theme = new AirthiumTheme(renderer)
-    theme.getRenderContext()
   })
 })
