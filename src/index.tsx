@@ -39,12 +39,12 @@ export class AirthiumThemeContext extends DefaultThemeRenderContext {
 
   // // Override navigation
   override navigation = (props: PageEvent<Reflection>): JSX.Element => {
-    return navigation(this, props)
+    return navigation(this as DefaultThemeRenderContext, props)
   }
 
   // Override footer
-  override footer = (): JSX.Element | undefined => {
-    return footer(this)
+  override footer = () => {
+    return footer(this as DefaultThemeRenderContext)
   }
 }
 

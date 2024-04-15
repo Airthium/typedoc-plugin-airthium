@@ -20,6 +20,6 @@ describe('src/footer', () => {
   test('hide', () => {
     context.options.getValue = () => 'hide'
     const element = footer(context)
-    expect(element).toBeUndefined()
+    expect(element).toEqual(<></>)
   })
 })

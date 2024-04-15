@@ -1,11 +1,12 @@
 import { DefaultThemeRenderContext, JSX } from 'typedoc'
+import { JsxElement } from 'typedoc/dist/lib/utils/jsx.elements'
 
 /**
  * Footer
  * @param context Context
  * @returns Footer
  */
-export const footer = (context: DefaultThemeRenderContext) => {
+export const footer = (context: DefaultThemeRenderContext): JsxElement => {
   const hideGenerator = context.options.getValue('hideGenerator')
   if (!hideGenerator)
     return (
@@ -25,4 +26,5 @@ export const footer = (context: DefaultThemeRenderContext) => {
         </p>
       </div>
     )
+  return <></>
 }
