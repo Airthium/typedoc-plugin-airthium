@@ -17,7 +17,7 @@
     "typedoc-plugin"
   ],
   "devDependencies": {
-    "@swc/core": "1.7.0",
+    "@swc/core": "1.7.3",
     "@swc/jest": "0.2.36",
     "@types/jest": "29.5.12",
     "depcheck": "1.4.7",
@@ -25,7 +25,7 @@
     "prettier": "3.3.3",
     "react": "18.3.1",
     "typedoc": "0.26.5",
-    "typescript": "5.5.3",
+    "typescript": "5.5.4",
     "uglifyjs-folder": "3.3.0"
   },
   "scripts": {
